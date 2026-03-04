@@ -43,3 +43,18 @@ export const CREATE_NEW_HOUSE = gql`
         }
     }
 `
+
+export const JOIN_HOUSE_BY_INVITATION_CODE = gql`
+    mutation join_house_by_invitation_code($inviteCode: String!) {
+        joinHouseByInvitationCode(inviteCode: $inviteCode) {
+            ... on House {
+                id
+                name
+                inviteCode
+            }
+            ... on HouseError {
+                message
+            }
+        }
+    }
+`

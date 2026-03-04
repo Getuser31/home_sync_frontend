@@ -16,6 +16,10 @@ export const GEY_HOUSE_FOR_CURRENT_USER = gql`
             id
             name
             inviteCode
+            users {
+                name
+                email
+            }
         }
     }
 `;
