@@ -28,3 +28,18 @@ export const REGISTER_MUTATION = gql`
        }
    }
 `
+
+export const CREATE_NEW_HOUSE = gql`
+    mutation CreateNewHouse($name: String!) {
+        createHouse(name: $name) {
+            ... on House {
+                id
+                name
+                inviteCode
+                }
+            ... on HouseError {
+                message
+            }
+        }
+    }
+`
