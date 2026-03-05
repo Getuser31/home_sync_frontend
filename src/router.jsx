@@ -5,6 +5,7 @@ import Register from "./user/Register";
 import AddHouse from "./house/AddHouse";
 import HomeComponent from "./HomeComponent";
 import JoinHouse from "./house/JoinHouse";
+import ManageHouse from "./house/Managehouse";
 
 
 const Router = createBrowserRouter([
@@ -17,6 +18,7 @@ const Router = createBrowserRouter([
             {path: "/register", element: <Register/>},
             {path: "/create_house", element: <AddHouse/>},
             {path: "/join_house", element: <JoinHouse/>},
+            {path: "/manage_house/:name/:id", element: <ManageHouse/>},
         ]
     },
 ])

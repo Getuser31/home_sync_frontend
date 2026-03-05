@@ -1,8 +1,8 @@
 import React from 'react';
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {useQuery} from "@apollo/client/react"
 import {isAuthenticated} from "./utils/auth";
-import {GEY_HOUSE_FOR_CURRENT_USER} from "./graphQl/query";
+import {GET_HOUSE_FOR_CURRENT_USER} from "./graphQl/query";
 
 
 const HomeComponent = () => {
@@ -15,11 +15,11 @@ const HomeComponent = () => {
         }
     }, [auth, navigate]);
 
-    const {loading, error, data} = useQuery(GEY_HOUSE_FOR_CURRENT_USER)
+    const {loading, error, data} = useQuery(GET_HOUSE_FOR_CURRENT_USER)
     const houses = data?.getHouseByUser;
 
     if (error) {
-        if(error.errors.filter((error) => error.message === "TOKEN_EXPIRED")){
+        if (error.errors.filter((error) => error.message === "TOKEN_EXPIRED")) {
             navigate("/login")
         }
     }
@@ -87,7 +87,8 @@ const HomeComponent = () => {
                                                   d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                                         </svg>
                                     </div>
-                                    <span className="text-xs font-mono text-gray-400">Nb Users: {house.users.length}</span>
+                                    <span
+                                        className="text-xs font-mono text-gray-400">Nb Users: {house.users.length}</span>
                                 </div>
                                 <h3 className="text-xl font-bold text-gray-900 mb-2">{house.name}</h3>
                                 <div className="flex items-center gap-2 mb-4">
@@ -96,10 +97,13 @@ const HomeComponent = () => {
                                         className="bg-gray-100 px-2 py-1 rounded text-blue-600 font-bold">{house.inviteCode}</code>
                                 </div>
                             </div>
-                            <button
-                                className="w-full mt-4 border border-gray-200 hover:bg-gray-50 text-gray-700 font-semibold py-2 rounded-xl transition-colors text-sm">
-                                Manage House
-                            </button>
+                            <Link to={`/manage_house/${house.name}/${house.id}`}>
+                                <button
+                                    className="w-full mt-4 border border-gray-200 hover:bg-gray-50 text-gray-700 font-semibold py-2 rounded-xl transition-colors text-sm"
+                                >
+                                    Manage House
+                                </button>
+                            </Link>
                         </div>
                     ))}
                 </div>
