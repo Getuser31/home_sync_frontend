@@ -32,6 +32,7 @@ export const GET_HOUSE_BY_ID = gql`
                 name
                 inviteCode
                 users {
+                    id
                     name
                     email
                 }
@@ -42,6 +43,16 @@ export const GET_HOUSE_BY_ID = gql`
             ... on HouseError {
                 message
             }
+        }
+    }
+`
+
+export const GET_TASK_RECURRENCES = gql`
+    query getTaskRecurrences{
+        getTaskRecurrences {
+            id
+            name
+            frequencyDays
         }
     }
 `

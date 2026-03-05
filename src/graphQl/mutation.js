@@ -58,3 +58,13 @@ export const JOIN_HOUSE_BY_INVITATION_CODE = gql`
         }
     }
 `
+
+export const ADD_NEW_TASK = gql`
+        mutation create_task($title: String!, $task_recurrence_id: Int!, $house_id: Int!, $description: String!, $weight: Int!, $user_id: Int!) {
+                createTask(title: $title, taskRecurrenceId: $task_recurrence_id, houseId: $house_id, description: $description, weight: $weight, userId: $user_id) {
+                        title
+                        description
+                        weight
+                }
+        }
+`
