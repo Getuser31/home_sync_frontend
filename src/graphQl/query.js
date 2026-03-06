@@ -36,6 +36,31 @@ export const GET_HOUSE_BY_ID = gql`
                     name
                     email
                 }
+                tasks {
+                    id
+                    title
+                    description
+                    weight
+                    taskLives {
+                        id
+                        recurrence {
+                            id
+                            name
+                            frequencyDays
+                        }
+                        completions {
+                            id
+                            userWhoCompletedId
+                            completedAt
+                            periodKey
+                        }
+                        assignedUsers{
+                            id
+                            name
+                            email
+                        }
+                    }
+                }
             }
             ... on UserError {
                 message

@@ -55,12 +55,9 @@ const ManageHouse = () => {
                     </button>
                 </div>
                 <ul className="flex flex-col gap-3 mb-6">
-                    {["Grocery Shopping", "Clean Kitchen", "Take out Trash"].map((chore, index) => (
+                    {house.tasks.map((task, index) => (
                         <li key={index} className="flex items-center gap-3 bg-gray-50/50 border border-gray-100 rounded-xl px-4 py-3">
-                            <div className="w-5 h-5 rounded-md border-2 border-gray-300 flex items-center justify-center">
-                                <div className="w-2.5 h-2.5 bg-transparent rounded-sm"></div>
-                            </div>
-                            <span className="text-sm font-medium text-gray-600">{chore}</span>
+                            <span key={task.id} className="text-sm font-medium text-gray-600">{task.title}</span>
                         </li>
                     ))}
                 </ul>
