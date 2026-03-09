@@ -1,11 +1,12 @@
-import React from "react";
-import {useParams} from "react-router-dom";
+import React, {useState} from "react";
+import {useNavigate, useParams} from "react-router-dom";
 import {useMutation, useQuery} from "@apollo/client/react";
 import {GET_HOUSE_BY_ID, GET_TASK_BY_ID} from "../graphQl/query";
-import {ASSIGN_TASK_TO_USER, REMOVE_USER_FROM_TASK} from "../graphQl/mutation";
+import {ASSIGN_TASK_TO_USER, DELETE_TASK, REMOVE_USER_FROM_TASK} from "../graphQl/mutation";
 
 const ConsultTask = () => {
     const {houseId, taskId} = useParams()
+    const navigate = useNavigate()
     const {loading, error, data} = useQuery(GET_TASK_BY_ID, {variables: {id: parseInt(taskId)}})
     const {
         loading: loadinghouse,
@@ -14,6 +15,8 @@ const ConsultTask = () => {
     } = useQuery(GET_HOUSE_BY_ID, {variables: {id: parseInt(houseId)}})
     const [assignUserToTask] = useMutation(ASSIGN_TASK_TO_USER)
     const [removeUserFromTaskMutation] = useMutation(REMOVE_USER_FROM_TASK)
+    const [deleteTaskMutation] = useMutation(DELETE_TASK)
+    const [showDeleteModal, setShowDeleteModal] = useState(false)
 
     const isLoading = loading || loadinghouse;
     const combinedError = error || errorHouse;
@@ -96,93 +99,138 @@ const ConsultTask = () => {
         })
     }
 
+    const deleteTask = () => {
+        deleteTaskMutation({variables: {taskId: parseInt(taskId)}})
+            .then(() => navigate(-1))
+            .catch((error) => {
+                console.log(error)
+            })
+    }
+
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-start justify-center p-6">
-            <div className="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-lg border border-white/50">
-                <div className="mb-8">
-                    <p className="text-indigo-600 font-bold text-xs uppercase tracking-widest mb-1">Task</p>
-                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">{task.title}</h1>
-                    {task.description && (
-                        <p className="mt-2 text-sm text-gray-500">{task.description}</p>
-                    )}
-                </div>
+        <>
+            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-start justify-center p-6">
+                <div className="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-lg border border-white/50">
+                    <div className="mb-8">
+                        <p className="text-indigo-600 font-bold text-xs uppercase tracking-widest mb-1">Task</p>
+                        <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">{task.title}</h1>
+                        {task.description && (
+                            <p className="mt-2 text-sm text-gray-500">{task.description}</p>
+                        )}
+                    </div>
 
-                <div className="flex flex-col gap-6">
-                    {task.taskLives.map((taskLife) => (
-                        <div key={taskLife.id} className="border border-gray-100 rounded-2xl p-5 bg-gray-50/50">
-                            <div className="flex items-center justify-between mb-4">
-                                <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wide">{taskLife.recurrence.name}</h2>
-                                <span
-                                    className="bg-indigo-100 text-indigo-700 text-xs font-bold px-2.5 py-1 rounded-full">
-                                    Every {taskLife.recurrence.frequencyDays}d
-                                </span>
-                            </div>
+                    <button
+                        onClick={() => setShowDeleteModal(true)}
+                        className="mb-6 flex items-center gap-2 text-red-500 hover:text-white border border-red-200 hover:bg-red-500 hover:border-red-500 text-xs font-bold px-4 py-2 rounded-xl transition-all"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd"/>
+                        </svg>
+                        Delete Task
+                    </button>
 
-                            {taskLife.completions.length > 0 ? (
-                                <ul className="flex flex-col gap-2">
-                                    {taskLife.completions.map((completion) => (
-                                        <li key={completion.id}
-                                            className="flex items-center gap-3 bg-white border border-gray-100 rounded-xl px-4 py-2.5 shadow-sm">
-                                            <div className="w-2 h-2 rounded-full bg-green-400 shrink-0"/>
-                                            <span className="text-xs text-gray-600 font-medium">
-                                                {new Date(completion.completedAt).toLocaleString()}
-                                            </span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p className="text-xs text-gray-400 italic">No completions yet.</p>
-                            )}
+                    <div className="flex flex-col gap-6">
+                        {task.taskLives.map((taskLife) => (
+                            <div key={taskLife.id} className="border border-gray-100 rounded-2xl p-5 bg-gray-50/50">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wide">{taskLife.recurrence.name}</h2>
+                                    <span className="bg-indigo-100 text-indigo-700 text-xs font-bold px-2.5 py-1 rounded-full">
+                                        Every {taskLife.recurrence.frequencyDays}d
+                                    </span>
+                                </div>
 
-                            {taskLife.assignedUsers.length > 0 ? (
-                                <div className="mt-4">
-                                    <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-2">Assigned
-                                        To</h3>
+                                {taskLife.completions.length > 0 ? (
                                     <ul className="flex flex-col gap-2">
-                                        {taskLife.assignedUsers.map((user) => (
-                                            <li key={user.id}
-                                                className="flex items-center gap-3 bg-white border border-gray-100 rounded-xl px-4 py-2.5 shadow-sm">
+                                        {taskLife.completions.map((completion) => (
+                                            <li key={completion.id} className="flex items-center gap-3 bg-white border border-gray-100 rounded-xl px-4 py-2.5 shadow-sm">
                                                 <div className="w-2 h-2 rounded-full bg-green-400 shrink-0"/>
                                                 <span className="text-xs text-gray-600 font-medium">
-                                                    {user.name}
+                                                    {new Date(completion.completedAt).toLocaleString()}
                                                 </span>
-                                                <button
-                                                    onClick={() => removeUserFromTask(user.id)}
-                                                    className="ml-auto text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg p-1 transition-colors"
-                                                >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
-                                                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                                                    </svg>
-                                                </button>
                                             </li>
                                         ))}
                                     </ul>
-                                </div>
-                            ) : (
-                                <p className="text-xs text-gray-400 italic mt-4">No users assigned yet.</p>
-                            )}
+                                ) : (
+                                    <p className="text-xs text-gray-400 italic">No completions yet.</p>
+                                )}
 
-                            <div className="mt-5">
-                                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">
-                                    Assign to member
-                                </label>
-                                <select
-                                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-700 font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition"
-                                    disabled={assignedNewUser.length === 0}
-                                    onChange={assignUser}
-                                >
-                                    <option value="">Select a member</option>
-                                    {assignedNewUser.map((user) => (
-                                        <option key={user.id} value={user.id}>{user.name}</option>
-                                    ))}
-                                </select>
+                                {taskLife.assignedUsers.length > 0 ? (
+                                    <div className="mt-4">
+                                        <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-2">Assigned To</h3>
+                                        <ul className="flex flex-col gap-2">
+                                            {taskLife.assignedUsers.map((user) => (
+                                                <li key={user.id} className="flex items-center gap-3 bg-white border border-gray-100 rounded-xl px-4 py-2.5 shadow-sm">
+                                                    <div className="w-2 h-2 rounded-full bg-green-400 shrink-0"/>
+                                                    <span className="text-xs text-gray-600 font-medium">{user.name}</span>
+                                                    <button
+                                                        onClick={() => removeUserFromTask(user.id)}
+                                                        className="ml-auto text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg p-1 transition-colors"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                                            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"/>
+                                                        </svg>
+                                                    </button>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                ) : (
+                                    <p className="text-xs text-gray-400 italic mt-4">No users assigned yet.</p>
+                                )}
+
+                                <div className="mt-5">
+                                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">
+                                        Assign to member
+                                    </label>
+                                    <select
+                                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-700 font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition"
+                                        disabled={assignedNewUser.length === 0}
+                                        onChange={assignUser}
+                                    >
+                                        <option value="">Select a member</option>
+                                        {assignedNewUser.map((user) => (
+                                            <option key={user.id} value={user.id}>{user.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             </div>
-        </div>
+
+            {showDeleteModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowDeleteModal(false)}/>
+                    <div className="relative bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm">
+                        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-red-100 mx-auto mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd"/>
+                            </svg>
+                        </div>
+                        <h2 className="text-lg font-extrabold text-gray-900 text-center mb-1">Delete Task</h2>
+                        <p className="text-sm text-gray-500 text-center mb-6">
+                            Are you sure you want to delete <span className="font-semibold text-gray-700">"{task.title}"</span>? This action cannot be undone.
+                        </p>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setShowDeleteModal(false)}
+                                className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-bold text-gray-600 hover:bg-gray-50 transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={deleteTask}
+                                className="flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-sm font-bold text-white transition-colors"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </>
     );
 }
 

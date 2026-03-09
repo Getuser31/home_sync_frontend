@@ -69,6 +69,19 @@ export const ADD_NEW_TASK = gql`
         }
 `
 
+export const DELETE_TASK = gql`
+    mutation delete_task($taskId : Int!) {
+        deleteTask(taskId: $taskId) {
+            ... on DeleteTaskSuccess {
+                success
+            }
+            ... on TaskError {
+                message
+            }
+        }
+    }
+`
+
 export const ASSIGN_TASK_TO_USER = gql`
     mutation assign_task_to_user($task_id: Int!, $user_id: Int!){
         assignTaskToUser(taskId: $task_id, userId: $user_id) {
@@ -79,6 +92,9 @@ export const ASSIGN_TASK_TO_USER = gql`
                 weight
             }
             ... on UserError {
+                message
+            }
+            ... on TaskError {
                 message
             }
         }
@@ -95,6 +111,9 @@ export const REMOVE_USER_FROM_TASK = gql`
                 weight
             }
             ... on UserError {
+                message
+            }
+            ... on TaskError {
                 message
             }
         }
