@@ -112,3 +112,18 @@ export const GET_TASK_RECURRENCES = gql`
         }
     }
 `
+
+export const GET_ME = gql`
+    query getMe{
+        getMe{
+            ... on User{
+                id
+                name
+                email
+            }
+           ... on UserError{
+               message
+           }
+        }
+    }
+`

@@ -104,6 +104,13 @@ const HomeComponent = () => {
                                     Manage House
                                 </button>
                             </Link>
+                            <Link to={`/profile_house/${house.name}/${house.id}`}>
+                                <button
+                                    className="w-full mt-4 border border-gray-200 hover:bg-gray-50 text-gray-700 font-semibold py-2 rounded-xl transition-colors text-sm"
+                                >
+                                    Consult House
+                                </button>
+                            </Link>
                         </div>
                     ))}
                 </div>

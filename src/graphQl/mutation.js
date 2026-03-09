@@ -119,3 +119,18 @@ export const REMOVE_USER_FROM_TASK = gql`
         }
     }
 `
+
+export const COMPLETE_TASK_FOR_USER = gql`
+    mutation complete_task($taskId: Int!) {
+        completeTask(taskId: $taskId) {
+            ... on TaskCompletion {
+                id
+                completedAt
+                periodKey
+            }
+            ... on UserError {
+                message
+            }
+        }
+    }
+    `

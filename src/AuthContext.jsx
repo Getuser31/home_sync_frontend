@@ -1,5 +1,6 @@
 import React, {createContext, useContext, useState, useEffect} from "react";
 import {useApolloClient} from "@apollo/client/react";
+import {GET_ME} from "./graphQl/query";
 
 const AuthContext = createContext(null)
 
@@ -15,6 +16,25 @@ export const AuthProvider = ({children}) => {
             setLoading(false)
             return;
         }
+
+        client.query({query: GET_ME})
+            .then(
+                (result) => {
+                    if(result?.data?.getMe){
+                        setUser({
+                            token,
+                            ...result.data.getMe
+                        })
+                    }
+                }
+            )
+            .catch((error) => {
+                console.log(error)
+            })
+            .finally(() => {
+                setLoading(false)
+            })
+
     }, []);
 
     const login = (loginPayload) => {

@@ -1,5 +1,5 @@
 import React from "react";
-import {Link, useNavigate, useParams} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import {useQuery} from "@apollo/client/react";
 import {GET_HOUSE_BY_ID} from "../graphQl/query";
 import AddNewTaskButton from "../task/AddNewTaskButton";
@@ -7,7 +7,6 @@ import AddNewTaskButton from "../task/AddNewTaskButton";
 const ManageHouse = () => {
     const {id: houseId} = useParams()
     const {loading, error, data} = useQuery(GET_HOUSE_BY_ID, {variables: {id: parseInt(houseId)}})
-    const navigate = useNavigate()
 
     const house = data?.getHouseById;
 
