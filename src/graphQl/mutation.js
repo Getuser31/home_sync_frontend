@@ -68,3 +68,35 @@ export const ADD_NEW_TASK = gql`
                 }
         }
 `
+
+export const ASSIGN_TASK_TO_USER = gql`
+    mutation assign_task_to_user($task_id: Int!, $user_id: Int!){
+        assignTaskToUser(taskId: $task_id, userId: $user_id) {
+            ... on Task {
+                id
+                title
+                description
+                weight
+            }
+            ... on UserError {
+                message
+            }
+        }
+    }
+`
+
+export const REMOVE_USER_FROM_TASK = gql`
+    mutation Remove_user_from_task($task_id: Int!, $user_id: Int!) {
+        removeUserFromTask(taskId: $task_id, userId: $user_id) {
+            ... on Task {
+                id
+                title
+                description
+                weight
+            }
+            ... on UserError {
+                message
+            }
+        }
+    }
+`

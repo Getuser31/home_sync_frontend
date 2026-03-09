@@ -72,6 +72,37 @@ export const GET_HOUSE_BY_ID = gql`
     }
 `
 
+export const GET_TASK_BY_ID = gql`
+    query getTaskById($id: Int!){
+        getTaskById(id: $id){
+            id
+            title
+            description
+            weight
+            taskLives{
+                id
+                recurrence{
+                    id
+                    name
+                    frequencyDays
+                }
+                completions{
+                    id
+                    completedAt
+                    periodKey
+                    userWhoCompletedId
+                }
+                assignedUsers{
+                    id
+                    name
+                    email
+                }
+            }
+        }
+    }
+`
+
+
 export const GET_TASK_RECURRENCES = gql`
     query getTaskRecurrences{
         getTaskRecurrences {
