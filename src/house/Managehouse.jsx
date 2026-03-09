@@ -2,6 +2,7 @@ import React from "react";
 import {Link, useNavigate, useParams} from "react-router-dom";
 import {useQuery} from "@apollo/client/react";
 import {GET_HOUSE_BY_ID} from "../graphQl/query";
+import AddNewTaskButton from "../task/AddNewTaskButton";
 
 const ManageHouse = () => {
     const {id: houseId} = useParams()
@@ -51,7 +52,7 @@ const ManageHouse = () => {
                     <div className="flex items-center justify-between mb-4 px-1">
                         <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide">Tasks</h3>
                         <button className="text-indigo-600 hover:text-indigo-800 text-xs font-bold transition-colors">
-                            View All
+                            <Link to={`/all_tasks/${house.id}`}>View All</Link>
                         </button>
                     </div>
                     <ul className="flex flex-col gap-3 mb-6">
@@ -77,18 +78,7 @@ const ManageHouse = () => {
                             </li>
                         ))}
                     </ul>
-                    <button
-                        className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-indigo-200"
-                        onClick={() => navigate(`/add_new_task/${house.id}`)}
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20"
-                             fill="currentColor">
-                            <path fillRule="evenodd"
-                                  d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                                  clipRule="evenodd"/>
-                        </svg>
-                        Add New Task
-                    </button>
+                   <AddNewTaskButton houseId={house.id} className="mt-4"/>
                 </div>
 
                 <div className="bg-indigo-50/50 border border-indigo-100 rounded-2xl p-5">
