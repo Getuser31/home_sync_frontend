@@ -133,4 +133,20 @@ export const COMPLETE_TASK_FOR_USER = gql`
             }
         }
     }
-    `
+`
+
+export const UNCOMPLETED_TASK_FOR_USER = gql`
+    mutation uncompleted_task($taskId: Int!) {
+        uncompletedTask(taskId: $taskId) {
+            ... on UncompletedTaskSuccess {
+                success
+            }
+            ... on UserError {
+                message
+            }
+            ... on TaskError {
+                message
+            }
+        }
+    }    
+`

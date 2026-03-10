@@ -43,6 +43,7 @@ export const GET_HOUSE_BY_ID = gql`
                     weight
                     taskLives {
                         id
+                        isCompleted   
                         recurrence {
                             id
                             name

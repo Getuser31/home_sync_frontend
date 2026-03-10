@@ -1,14 +1,16 @@
-import React from "react";
+import React, {useState} from "react";
 import {useParams} from "react-router-dom";
 import {GET_HOUSE_BY_ID} from "../graphQl/query";
 import {useMutation, useQuery} from "@apollo/client/react";
 import {useAuth} from "../AuthContext";
-import {COMPLETE_TASK_FOR_USER} from "../graphQl/mutation";
+import {COMPLETE_TASK_FOR_USER, UNCOMPLETED_TASK_FOR_USER} from "../graphQl/mutation";
 
 const ConsultHouse = () => {
     const {id: houseId} = useParams()
     const {loading, error, data} = useQuery(GET_HOUSE_BY_ID, {variables: {id: parseInt(houseId)}})
     const [completeTask] = useMutation(COMPLETE_TASK_FOR_USER)
+    const [unCompletedTask] = useMutation(UNCOMPLETED_TASK_FOR_USER)
+    const [mutationError, setMutationError] = useState(null)
 
     const {user} = useAuth()
 
@@ -27,16 +29,40 @@ const ConsultHouse = () => {
     console.log(tasksForCurrentUser)
 
     const handleCheckTask = (taskId) => {
-       completeTask({variables: {taskId: taskId.taskId}})
-           .then(
-               (data) => {
-                   console.log(data)
-               }
-           )
-           .catch((error) => {
-               console.log(error)
-           }
-           )
+        setMutationError(null)
+        const task = tasksForCurrentUser.find(task => (task.id === taskId.taskId))
+        console.log(task)
+        if(task.taskLives[0].isCompleted){
+            unCompletedTask({
+                variables: {taskId: taskId.taskId},
+                refetchQueries: [{query: GET_HOUSE_BY_ID, variables: {id: parseInt(houseId)}}]
+                })
+                .then(
+                    (data) => {
+                        console.log(data)
+                    }
+                )
+                .catch((error) => {
+                        console.error("Mutation error (uncomplete):", error)
+                        setMutationError(error.message || "Failed to uncomplete task.")
+                    }
+                )
+        } else {
+            completeTask({
+                variables: {taskId: taskId.taskId},
+                refetchQueries: [{query: GET_HOUSE_BY_ID, variables: {id: parseInt(houseId)}}]
+            })
+                .then(
+                    (data) => {
+                        console.log(data)
+                    }
+                )
+                .catch((error) => {
+                        console.error("Mutation error (complete):", error)
+                        setMutationError(error.message || "Failed to complete task.")
+                    }
+                )
+        }
     }
 
     return (
@@ -47,6 +73,18 @@ const ConsultHouse = () => {
                     <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">{house.name}</h1>
                     <p className="mt-1 text-sm text-gray-400">Tasks assigned to you</p>
                 </div>
+
+                {mutationError && (
+                    <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-600 text-sm rounded-2xl flex justify-between items-center animate-in fade-in duration-300">
+                        <span>{mutationError}</span>
+                        <button
+                            onClick={() => setMutationError(null)}
+                            className="text-red-400 hover:text-red-600 font-bold px-2"
+                        >
+                            ✕
+                        </button>
+                    </div>
+                )}
 
                 {tasksForCurrentUser.length === 0 ? (
                     <p className="text-sm text-gray-400 italic">No tasks assigned to you yet.</p>
@@ -68,9 +106,10 @@ const ConsultHouse = () => {
                                     {tasks.map((task) => (
                                         <li key={task.id} className="flex items-center gap-4 bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4">
                                             <input
-                                                onClick={() => handleCheckTask({taskId: task.id})}
+                                                onChange={() => handleCheckTask({taskId: task.id})}
                                                 type="checkbox"
                                                 className="w-5 h-5 rounded-md border-gray-300 text-indigo-600 accent-indigo-600 cursor-pointer shrink-0"
+                                                checked={task.taskLives[0].isCompleted}
                                             />
                                             <div className="flex flex-col min-w-0">
                                                 <span className="text-sm font-bold text-gray-800 truncate">{task.title}</span>
