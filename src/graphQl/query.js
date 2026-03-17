@@ -11,12 +11,16 @@ export const GET_HOUSE_BY_CODE = gql`
 `;
 
 export const GET_HOUSE_FOR_CURRENT_USER = gql`
-    query getHouseByUser{
+    query getHouseByUser {
         getHouseByUser {
             id
             name
             inviteCode
+            currentUserRole {
+                name
+            }
             users {
+                id
                 name
                 email
             }
@@ -121,6 +125,17 @@ export const GET_ME = gql`
                 id
                 name
                 email
+                roleHouseUsers {
+                    house {
+                        id
+                        name
+                        inviteCode
+                    }
+                    role {
+                        id
+                        name
+                    }
+                }
             }
            ... on UserError{
                message
