@@ -3,6 +3,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import {useMutation, useQuery} from "@apollo/client/react";
 import {GET_HOUSE_BY_ID, GET_TASK_BY_ID} from "../graphQl/query";
 import {ASSIGN_TASK_TO_USER, DELETE_TASK, REMOVE_USER_FROM_TASK} from "../graphQl/mutation";
+import generatePeriodKey from "../utils/periodKeyService";
 
 const ConsultTask = () => {
     const {houseId, taskId} = useParams()
@@ -17,6 +18,8 @@ const ConsultTask = () => {
     const [removeUserFromTaskMutation] = useMutation(REMOVE_USER_FROM_TASK)
     const [deleteTaskMutation] = useMutation(DELETE_TASK)
     const [showDeleteModal, setShowDeleteModal] = useState(false)
+    const [errorMessage, setErrorMessage] = useState(null)
+    const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().split('T')[0])
 
     const isLoading = loading || loadinghouse;
     const combinedError = error || errorHouse;
@@ -64,38 +67,24 @@ const ConsultTask = () => {
     const assignedNewUser = house.users.filter(user => !userAlreadyAssigned.some(u => u.id === user.id));
 
     const assignUser = (e) => {
-        console.log(e.target.value)
         const userId = parseInt(e.target.value);
         if (userId) {
             assignUserToTask({
                 variables: { task_id: task.id, user_id: userId },
                 refetchQueries: [{ query: GET_TASK_BY_ID, variables: { id: parseInt(taskId) } }]
-            }).then(
-                (data) => {
-                    console.log(data)
-                }
-            ).catch((error) => {
-                console.log(error)
+            }).catch((error) => {
+                setErrorMessage(`Failed to assign user: ${error.message}`)
             })
         }
     }
 
     const removeUserFromTask = (userId) => {
         if (!userId) return;
-        console.log(
-            "removeUserFromTask",
-            task.id,
-            userId
-        )
         removeUserFromTaskMutation({
             variables: {task_id: task.id, user_id: userId},
             refetchQueries: [{ query: GET_TASK_BY_ID, variables: { id: parseInt(taskId) } }]
-        }).then(
-            (data) => {
-                console.log(data)
-            }
-        ).catch((error) => {
-            console.log(error)
+        }).catch((error) => {
+            setErrorMessage(`Failed to remove user: ${error.message}`)
         })
     }
 
@@ -103,8 +92,46 @@ const ConsultTask = () => {
         deleteTaskMutation({variables: {taskId: parseInt(taskId)}})
             .then(() => navigate(-1))
             .catch((error) => {
-                console.log(error)
+                setErrorMessage(`Failed to delete task: ${error.message}`)
+                setShowDeleteModal(false)
             })
+    }
+
+    const periodKey = (recurrenceName, date) => {
+        return generatePeriodKey(recurrenceName, date ? new Date(date) : undefined)
+    }
+
+    const completionsForDate = (taskLife, date) => {
+        const key = periodKey(taskLife.recurrence.name, date)
+        return taskLife.completions.filter(c => c.periodKey === key)
+    }
+
+    const taskCompletionForCurrentMonth = (taskLife) => {
+        const recurrence = taskLife.recurrence.name
+        const currentMonth = new Date().getMonth(); // 0-indexed
+        const currentYear = new Date().getFullYear();
+        const actualDayNumber = new Date().getDate();
+        const weekOfTheMonth = (date = new Date()) => {
+            return Math.ceil(date.getDate() / 7);
+        }
+
+        const thisMonth = taskLife.completions.filter(c => {
+            const date = new Date(c.completedAt);
+            return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+        });
+
+        if (recurrence === 'Daily'){
+            return (Math.round((thisMonth.length * 100) / actualDayNumber))
+        }
+        if (recurrence === 'Weekly'){
+            return (Math.round((thisMonth.length * 100) / weekOfTheMonth()))
+        }
+        else {
+            if(taskLife.completions.length > 0) {
+                return '100'
+            }
+            return '0'
+        }
     }
 
 
@@ -119,6 +146,13 @@ const ConsultTask = () => {
                             <p className="mt-2 text-sm text-gray-500">{task.description}</p>
                         )}
                     </div>
+
+                    {errorMessage && (
+                        <div className="mb-4 flex items-center justify-between gap-3 bg-red-50 border border-red-200 text-red-700 text-xs font-medium px-4 py-3 rounded-xl">
+                            <span>{errorMessage}</span>
+                            <button onClick={() => setErrorMessage(null)} className="text-red-400 hover:text-red-600 shrink-0">✕</button>
+                        </div>
+                    )}
 
                     <button
                         onClick={() => setShowDeleteModal(true)}
@@ -140,20 +174,65 @@ const ConsultTask = () => {
                                     </span>
                                 </div>
 
-                                {taskLife.completions.length > 0 ? (
+                                {taskLife.completions.filter((completion) => completion.periodKey === periodKey(taskLife.recurrence.name)).length > 0 ? (
                                     <ul className="flex flex-col gap-2">
-                                        {taskLife.completions.map((completion) => (
+                                        {taskLife.completions.filter((completion) => completion.periodKey === periodKey(taskLife.recurrence.name)).map((completion) => (
                                             <li key={completion.id} className="flex items-center gap-3 bg-white border border-gray-100 rounded-xl px-4 py-2.5 shadow-sm">
                                                 <div className="w-2 h-2 rounded-full bg-green-400 shrink-0"/>
-                                                <span className="text-xs text-gray-600 font-medium">
-                                                    {new Date(completion.completedAt).toLocaleString()}
-                                                </span>
+                                                <div className="flex flex-col">
+                                                    <span className="text-xs font-semibold text-gray-700">
+                                                        {taskLife.assignedUsers.find((user) => String(user.id) === String(completion.userWhoCompletedId))?.name ?? "Unknown"}
+                                                    </span>
+                                                    <span className="text-xs text-gray-400">
+                                                        {new Date(completion.completedAt).toLocaleString()}
+                                                    </span>
+                                                </div>
                                             </li>
                                         ))}
                                     </ul>
                                 ) : (
                                     <p className="text-xs text-gray-400 italic">No completions yet.</p>
                                 )}
+
+
+                                <div className="mt-4 flex items-center justify-between bg-indigo-50 border border-indigo-100 rounded-xl px-4 py-3">
+                                    <span className="text-xs font-bold text-indigo-700 uppercase tracking-wide">This month</span>
+                                    <span className="text-lg font-extrabold text-indigo-600">{taskCompletionForCurrentMonth(taskLife) ?? "—"}<span className="text-xs font-semibold ml-0.5">%</span></span>
+                                </div>
+
+                                <div className="mt-4 border border-gray-100 rounded-xl p-4 bg-gray-50/50">
+                                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">
+                                        Check a specific date
+                                    </label>
+                                    <input
+                                        type="date"
+                                        value={selectedDate}
+                                        onChange={(e) => setSelectedDate(e.target.value)}
+                                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-700 font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition"
+                                    />
+                                    {selectedDate && (() => {
+                                        const results = completionsForDate(taskLife, selectedDate)
+                                        return results.length > 0 ? (
+                                            <ul className="mt-3 flex flex-col gap-2">
+                                                {results.map((completion) => (
+                                                    <li key={completion.id} className="flex items-center gap-3 bg-white border border-gray-100 rounded-xl px-4 py-2.5 shadow-sm">
+                                                        <div className="w-2 h-2 rounded-full bg-green-400 shrink-0"/>
+                                                        <div className="flex flex-col">
+                                                            <span className="text-xs font-semibold text-gray-700">
+                                                                {taskLife.assignedUsers.find((user) => String(user.id) === String(completion.userWhoCompletedId))?.name ?? "Unknown"}
+                                                            </span>
+                                                            <span className="text-xs text-gray-400">
+                                                                {new Date(completion.completedAt).toLocaleString()}
+                                                            </span>
+                                                        </div>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            <p className="mt-3 text-xs text-gray-400 italic">No completions for this period.</p>
+                                        )
+                                    })()}
+                                </div>
 
                                 {taskLife.assignedUsers.length > 0 ? (
                                     <div className="mt-4">
