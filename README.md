@@ -1,13 +1,16 @@
 # HomeSync Frontend
 
-A React-based web application for managing shared household tasks. Users can create or join houses, invite members via a code, and manage recurring tasks across the household.
+A React-based web application for managing shared household tasks. Users can create or join houses, invite members via a code, manage recurring tasks, and track completions across the household.
 
 ## Features
 
 - **Authentication** - Register and login with JWT-based sessions
 - **House Management** - Create a house or join an existing one via invite code
-- **Member Management** - View all members of a house
-- **Task Management** - Add tasks to a house with recurrence schedules and member assignments
+- **Member Management** - View, manage roles, and remove members; add users without an account (dummy users)
+- **Role-based Access** - Admin-only sections (e.g. inactive user tasks) are gated by `currentUserRole`
+- **Task Management** - Add tasks with recurrence schedules and member assignments
+- **Task Completion** - Check off tasks; when multiple inactive users are assigned, a modal prompts to select who completed it
+- **Error Handling** - GraphQL union errors (`UserError`, `HouseError`) are displayed inline
 
 ## Tech Stack
 
@@ -53,7 +56,11 @@ npm run build
 | `/create_house` | Create a new house |
 | `/join_house` | Join a house via invite code |
 | `/manage_house/:name/:id` | View and manage a specific house (members, tasks, invite code) |
+| `/profile_house/:name/:id` | Consult house tasks assigned to the current user |
 | `/add_new_task/:houseId` | Add a new task to a house |
+| `/consult_task/:houseId/:taskName/:taskId` | View and interact with a specific task |
+| `/all_tasks/:houseId` | List all tasks in a house |
+| `/manage_users/:houseId` | Manage house members, roles, and dummy users |
 
 ## Project Structure
 
@@ -65,17 +72,36 @@ src/
 ├── house/
 │   ├── AddHouse.jsx
 │   ├── JoinHouse.jsx
-│   └── Managehouse.jsx
+│   ├── Managehouse.jsx
+│   ├── ConsultHouse.jsx
+│   └── ManageUsers.jsx
 ├── task/
-│   └── AddNewTask.jsx
+│   ├── AddNewTask.jsx
+│   ├── AddNewTaskButton.jsx
+│   ├── AllTasks.jsx
+│   └── ConsultTask.jsx
 ├── user/
 │   ├── Login.jsx
 │   └── Register.jsx
 ├── utils/
-│   └── auth.js         # Auth helpers
+│   ├── auth.js              # Auth helpers
+│   └── periodKeyService.js
 ├── App.js
 ├── AuthContext.jsx
 ├── HomeComponent.jsx
 ├── Menu.jsx
 └── router.jsx
 ```
+
+## Key Behaviours
+
+### ManageUsers (`/manage_users/:houseId`)
+- Change a member's role via a dropdown — updates fire immediately on `onChange`
+- Remove a member with a confirmation modal before the mutation runs
+- Add a user without an account (dummy user) via the form at the bottom
+- `UserError` and `HouseError` messages from mutations are displayed in a red banner
+
+### ConsultHouse (`/profile_house/:name/:id`)
+- Tasks are grouped by recurrence and shown in two sections: tasks for the current user and tasks for inactive (dummy) users
+- The inactive user section is only visible to admins
+- When an inactive-user task has multiple assignees, a modal prompts the admin to pick who completed it before the mutation is called

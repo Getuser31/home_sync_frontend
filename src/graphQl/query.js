@@ -35,6 +35,9 @@ export const GET_HOUSE_BY_ID = gql`
                 id
                 name
                 inviteCode
+                currentUserRole {
+                    name
+                }
                 users {
                     id
                     name
@@ -71,6 +74,7 @@ export const GET_HOUSE_BY_ID = gql`
                             id
                             name
                             email
+                            isActive
                         }
                     }
                 }

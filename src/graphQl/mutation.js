@@ -121,8 +121,8 @@ export const REMOVE_USER_FROM_TASK = gql`
 `
 
 export const COMPLETE_TASK_FOR_USER = gql`
-    mutation complete_task($taskId: Int!) {
-        completeTask(taskId: $taskId) {
+    mutation complete_task($taskId: Int!, $userId: Int) {
+        completeTask(taskId: $taskId, userId: $userId) {
             ... on TaskCompletion {
                 id
                 completedAt
@@ -136,8 +136,8 @@ export const COMPLETE_TASK_FOR_USER = gql`
 `
 
 export const UNCOMPLETED_TASK_FOR_USER = gql`
-    mutation uncompleted_task($taskId: Int!) {
-        uncompletedTask(taskId: $taskId) {
+    mutation uncompleted_task($taskId: Int!, $userId: Int) {
+        uncompletedTask(taskId: $taskId, userId: $userId) {
             ... on UncompletedTaskSuccess {
                 success
             }
