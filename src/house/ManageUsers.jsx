@@ -2,8 +2,7 @@ import React, {useState} from "react";
 import {useParams} from "react-router-dom";
 import {useMutation, useQuery} from "@apollo/client/react";
 import {GET_HOUSE_BY_ID, GET_ROLES} from "../graphQl/query";
-
-import {UPDATE_USER_ROLE} from "../graphQl/mutation";
+import {CREATE_DUMMY_USER_FOR_HOUSE, UPDATE_USER_ROLE} from "../graphQl/mutation";
 
 const ManageUsers = () => {
     const {houseId} = useParams()
@@ -11,6 +10,8 @@ const ManageUsers = () => {
     const {data: roleData} = useQuery(GET_ROLES)
     const [mutationError, setMutationError] = useState(null)
     const [updateUserRole] = useMutation(UPDATE_USER_ROLE)
+    const [addDummyUserMutation] = useMutation(CREATE_DUMMY_USER_FOR_HOUSE)
+    const [username, setUsername] = useState('')
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error.message}</div>;
@@ -34,6 +35,20 @@ const ManageUsers = () => {
         }
     }
 
+    const handleDummyUser = (e) => {
+        e.preventDefault()
+        addDummyUserMutation({
+            variables: {houseId: parseInt(houseId), username},
+            refetchQueries: [{query: GET_HOUSE_BY_ID, variables: {id: parseInt(houseId)}}],
+            setUsername: ''
+        }).then(({data}) => {
+            const typename = data?.createDummyUserForHouse?.__typename
+            if (typename === "UserError" || typename === "HouseError") {
+                setMutationError(data.createDummyUserForHouse.message)
+            }
+        })
+    }
+
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
@@ -44,53 +59,61 @@ const ManageUsers = () => {
                 </div>
 
                 {mutationError && (
-                    <div className="mb-4 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm font-medium">
+                    <div
+                        className="mb-4 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm font-medium">
                         {mutationError}
                     </div>
                 )}
 
                 <table className="w-full">
                     <thead>
-                        <tr className="border-b border-gray-100">
-                            <th className="text-left text-xs font-bold text-gray-500 uppercase tracking-wider pb-3 px-2">Name</th>
-                            <th className="text-left text-xs font-bold text-gray-500 uppercase tracking-wider pb-3 px-2">Email</th>
-                            <th className="text-left text-xs font-bold text-gray-500 uppercase tracking-wider pb-3 px-2">Role</th>
-                        </tr>
+                    <tr className="border-b border-gray-100">
+                        <th className="text-left text-xs font-bold text-gray-500 uppercase tracking-wider pb-3 px-2">Name</th>
+                        <th className="text-left text-xs font-bold text-gray-500 uppercase tracking-wider pb-3 px-2">Email</th>
+                        <th className="text-left text-xs font-bold text-gray-500 uppercase tracking-wider pb-3 px-2">Role</th>
+                    </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50">
-                        {house.users.map(user => (
-                            <tr key={user.email} className="group hover:bg-gray-50 transition-colors">
-                                <td className="py-3 px-2">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-white text-sm font-bold shadow-sm group-hover:scale-110 transition-transform">
-                                            {user.name.charAt(0).toUpperCase()}
-                                        </div>
-                                        <span className="text-sm font-bold text-gray-800">{user.name}</span>
+                    {house.users.map(user => (
+                        <tr key={user.email} className="group hover:bg-gray-50 transition-colors">
+                            <td className="py-3 px-2">
+                                <div className="flex items-center gap-3">
+                                    <div
+                                        className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-white text-sm font-bold shadow-sm group-hover:scale-110 transition-transform">
+                                        {user.name.charAt(0).toUpperCase()}
                                     </div>
-                                </td>
-                                <td className="py-3 px-2 text-sm text-gray-500">{user.email}</td>
-                                <td className="py-3 px-2">
-                                    <select onChange={(e) => handleUserRoleUpdate(e.target.value, user.id)} value={user.roleHouseUsers[0]?.role?.id} className="bg-indigo-100 text-indigo-700 text-xs font-bold px-2.5 py-1 rounded-full">
-                                        {!user.roleHouseUsers[0]?.role && (
-                                            <option value="" disabled selected>No role</option>
-                                        )}
-                                        {roles?.map(role => (
-                                            <option key={role.id} value={role.id} selected={user.roleHouseUsers[0]?.role?.id === role.id}>{role.name}</option>
-                                        ))}
-                                    </select>
-                                </td>
-                            </tr>
-                        ))}
+                                    <span className="text-sm font-bold text-gray-800">{user.name}</span>
+                                </div>
+                            </td>
+                            <td className="py-3 px-2 text-sm text-gray-500">{user.email}</td>
+                            <td className="py-3 px-2">
+                                <select onChange={(e) => handleUserRoleUpdate(e.target.value, user.id)}
+                                        value={user.roleHouseUsers[0]?.role?.id}
+                                        className="bg-indigo-100 text-indigo-700 text-xs font-bold px-2.5 py-1 rounded-full">
+                                    {!user.roleHouseUsers[0]?.role && (
+                                        <option value="" disabled selected>No role</option>
+                                    )}
+                                    {roles?.map(role => (
+                                        <option key={role.id} value={role.id}
+                                                selected={user.roleHouseUsers[0]?.role?.id === role.id}>{role.name}</option>
+                                    ))}
+                                </select>
+                            </td>
+                        </tr>
+                    ))}
                     </tbody>
                 </table>
 
                 <div className="mt-8 pt-8 border-t border-gray-100">
-                    <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Add User Without Account</h2>
-                    <form className="flex gap-3">
+                    <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Add User Without
+                        Account</h2>
+                    <form className="flex gap-3" onSubmit={handleDummyUser}>
                         <input
                             type="text"
                             name="username"
                             placeholder="Username"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
                             required
                             className="flex-1 px-4 py-2 rounded-xl border border-gray-200 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-300"
                         />

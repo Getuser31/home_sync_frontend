@@ -174,3 +174,21 @@ export const UPDATE_USER_ROLE = gql`
         }
     }
     `
+
+export const CREATE_DUMMY_USER_FOR_HOUSE = gql`
+    mutation create_dummy_user_for_house($houseId: Int!, $username: String!) {
+        createDummyUserForHouse(houseId: $houseId, username: $username) {
+            ... on User {
+                id
+                name
+                email
+            }
+            ... on UserError {
+                message
+            }
+            ... on HouseError {
+                message
+            }
+        }
+    }
+`
