@@ -39,6 +39,14 @@ export const GET_HOUSE_BY_ID = gql`
                     id
                     name
                     email
+                    isActive
+                    roleHouseUsers{
+                        id
+                        role{
+                            id
+                            name
+                        }
+                    }
                 }
                 tasks {
                     id
@@ -140,6 +148,15 @@ export const GET_ME = gql`
            ... on UserError{
                message
            }
+        }
+    }
+`
+
+export const GET_ROLES = gql`
+    query getRoles{
+        getRoles{
+            id
+            name
         }
     }
 `

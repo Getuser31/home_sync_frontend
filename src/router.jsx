@@ -10,6 +10,7 @@ import AddNewTask from "./task/AddNewTask";
 import ConsultTask from "./task/ConsultTask";
 import AllTasks from "./task/AllTasks";
 import ConsultHouse from "./house/ConsultHouse";
+import ManageUsers from "./house/ManageUsers";
 
 
 const Router = createBrowserRouter([
@@ -27,6 +28,7 @@ const Router = createBrowserRouter([
             {path: "/add_new_task/:houseId", element: <AddNewTask/>},
             {path: "/consult_task/:houseId/:taskName/:taskId", element: <ConsultTask/>},
             {path: "/all_tasks/:houseId/", element: <AllTasks/>},
+            {path: "/manage_users/:houseId/", element: <ManageUsers/>},
         ]
     },
 ])

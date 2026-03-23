@@ -26,9 +26,11 @@ const ManageHouse = () => {
                 <div className="mb-8">
                     <div className="flex items-center justify-between mb-4 px-1">
                         <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide">Members</h3>
-                        <span className="bg-indigo-100 text-indigo-700 text-xs font-bold px-2.5 py-1 rounded-full">
-                        {house.users.length} Total
-                    </span>
+                        <Link to={`/manage_users/${house.id}`}>
+                            <span className="bg-indigo-100 text-indigo-700 text-xs font-bold px-2.5 py-1 rounded-full">
+                                {house.users.length} Total
+                            </span>
+                        </Link>
                     </div>
                     <ul className="flex flex-col gap-3">
                         {house.users.map((user) => (
@@ -60,7 +62,8 @@ const ManageHouse = () => {
                                 key={task.id}
                                 className="flex items-center justify-between bg-gray-50/50 border border-gray-100 rounded-xl px-4 py-3"
                             >
-                                <Link to={`/consult_task/${house.id}/${task.title}/${task.id}`}><span className="text-sm font-medium text-gray-700">{task.title}</span></Link>
+                                <Link to={`/consult_task/${house.id}/${task.title}/${task.id}`}><span
+                                    className="text-sm font-medium text-gray-700">{task.title}</span></Link>
                                 <div className="flex items-center -space-x-2">
                                     {task.taskLives?.flatMap((taskLive) =>
                                         taskLive?.assignedUsers?.map((user) => (
@@ -77,7 +80,7 @@ const ManageHouse = () => {
                             </li>
                         ))}
                     </ul>
-                   <AddNewTaskButton houseId={house.id} className="mt-4"/>
+                    <AddNewTaskButton houseId={house.id} className="mt-4"/>
                 </div>
 
                 <div className="bg-indigo-50/50 border border-indigo-100 rounded-2xl p-5">

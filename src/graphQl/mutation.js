@@ -150,3 +150,27 @@ export const UNCOMPLETED_TASK_FOR_USER = gql`
         }
     }    
 `
+
+export const UPDATE_USER_ROLE = gql`
+    mutation update_user_role($userId: Int!, $roleId: Int!, $houseId: Int!){
+        updateUserRole(userId: $userId, roleId: $roleId, houseId: $houseId) {
+            ... on User {
+                id
+                name
+                email
+                roleHouseUsers {
+                    role {
+                        id
+                        name
+                    }
+                }
+            }
+            ... on UserError {
+                message
+            }
+            ... on HouseError {
+                message
+            }
+        }
+    }
+    `
