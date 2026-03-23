@@ -192,3 +192,18 @@ export const CREATE_DUMMY_USER_FOR_HOUSE = gql`
         }
     }
 `
+
+export const REMOVE_USER_FROM_HOUSE = gql`
+    mutation remove_user_from_house($userId : Int!, $houseId: Int!){
+        removeUserFromHouse(userId: $userId, houseId: $houseId) {
+            ... on House {
+                id
+                name
+                inviteCode
+            }
+            ... on HouseError {
+                message
+            }
+        }
+    }   
+`

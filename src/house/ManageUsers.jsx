@@ -2,16 +2,18 @@ import React, {useState} from "react";
 import {useParams} from "react-router-dom";
 import {useMutation, useQuery} from "@apollo/client/react";
 import {GET_HOUSE_BY_ID, GET_ROLES} from "../graphQl/query";
-import {CREATE_DUMMY_USER_FOR_HOUSE, UPDATE_USER_ROLE} from "../graphQl/mutation";
+import {CREATE_DUMMY_USER_FOR_HOUSE, REMOVE_USER_FROM_HOUSE, UPDATE_USER_ROLE} from "../graphQl/mutation";
 
 const ManageUsers = () => {
     const {houseId} = useParams()
     const {loading, error, data} = useQuery(GET_HOUSE_BY_ID, {variables: {id: parseInt(houseId)}})
     const {data: roleData} = useQuery(GET_ROLES)
     const [mutationError, setMutationError] = useState(null)
+    const [confirmUserId, setConfirmUserId] = useState(null)
     const [updateUserRole] = useMutation(UPDATE_USER_ROLE)
     const [addDummyUserMutation] = useMutation(CREATE_DUMMY_USER_FOR_HOUSE)
     const [username, setUsername] = useState('')
+    const [removeUserMutation] = useMutation(REMOVE_USER_FROM_HOUSE)
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error.message}</div>;
@@ -39,18 +41,31 @@ const ManageUsers = () => {
         e.preventDefault()
         addDummyUserMutation({
             variables: {houseId: parseInt(houseId), username},
-            refetchQueries: [{query: GET_HOUSE_BY_ID, variables: {id: parseInt(houseId)}}],
-            setUsername: ''
+            refetchQueries: [{query: GET_HOUSE_BY_ID, variables: {id: parseInt(houseId)}}]
         }).then(({data}) => {
             const typename = data?.createDummyUserForHouse?.__typename
             if (typename === "UserError" || typename === "HouseError") {
                 setMutationError(data.createDummyUserForHouse.message)
             }
+            setUsername('')
         })
+    }
+
+    const handleRemoveUser = () => {
+        removeUserMutation({
+            variables: {houseId: parseInt(houseId), userId: parseInt(confirmUserId)},
+            refetchQueries: [{query: GET_HOUSE_BY_ID, variables: {id: parseInt(houseId)}}]
+        }).then(({data}) => {
+            const typename = data?.removeUserFromHouse?.__typename
+            if (typename === "UserError" || typename === "HouseError") {
+                setMutationError(data.removeUserFromHouse.message)
+            }
+        }).finally(() => setConfirmUserId(null))
     }
 
 
     return (
+        <>
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
             <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-10 w-full max-w-2xl border border-white/50">
                 <div className="mb-8 text-center">
@@ -71,6 +86,7 @@ const ManageUsers = () => {
                         <th className="text-left text-xs font-bold text-gray-500 uppercase tracking-wider pb-3 px-2">Name</th>
                         <th className="text-left text-xs font-bold text-gray-500 uppercase tracking-wider pb-3 px-2">Email</th>
                         <th className="text-left text-xs font-bold text-gray-500 uppercase tracking-wider pb-3 px-2">Role</th>
+                        <th className="text-left text-xs font-bold text-gray-500 uppercase tracking-wider pb-3 px-2">Remove</th>
                     </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50">
@@ -98,6 +114,14 @@ const ManageUsers = () => {
                                                 selected={user.roleHouseUsers[0]?.role?.id === role.id}>{role.name}</option>
                                     ))}
                                 </select>
+                            </td>
+                            <td className="py-3 px-2">
+                                <button
+                                    onClick={() => setConfirmUserId(user.id)}
+                                    className="text-red-400 hover:text-red-600 text-xs font-bold transition-colors"
+                                >
+                                    Remove
+                                </button>
                             </td>
                         </tr>
                     ))}
@@ -127,6 +151,30 @@ const ManageUsers = () => {
                 </div>
             </div>
         </div>
+
+        {confirmUserId && (
+            <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+                <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm mx-4">
+                    <h3 className="text-lg font-extrabold text-gray-900 mb-2">Remove user?</h3>
+                    <p className="text-sm text-gray-500 mb-6">This action cannot be undone.</p>
+                    <div className="flex gap-3 justify-end">
+                        <button
+                            onClick={() => setConfirmUserId(null)}
+                            className="px-5 py-2 rounded-xl border border-gray-200 text-sm font-bold text-gray-600 hover:bg-gray-50 transition-colors"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={handleRemoveUser}
+                            className="px-5 py-2 rounded-xl bg-red-600 text-white text-sm font-bold hover:bg-red-700 transition-colors"
+                        >
+                            Remove
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )}
+        </>
     )
 }
 
