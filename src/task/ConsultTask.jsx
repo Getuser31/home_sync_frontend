@@ -10,7 +10,7 @@ const ConsultTask = () => {
     const navigate = useNavigate()
     const {loading, error, data} = useQuery(GET_TASK_BY_ID, {variables: {id: parseInt(taskId)}})
     const {
-        loading: loadinghouse,
+        loading: loadingHouse,
         error: errorHouse,
         data: houseData
     } = useQuery(GET_HOUSE_BY_ID, {variables: {id: parseInt(houseId)}})
@@ -21,7 +21,7 @@ const ConsultTask = () => {
     const [errorMessage, setErrorMessage] = useState(null)
     const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().split('T')[0])
 
-    const isLoading = loading || loadinghouse;
+    const isLoading = loading || loadingHouse;
     const combinedError = error || errorHouse;
 
     if (isLoading) {

@@ -8,7 +8,6 @@ import {useAuth} from "./AuthContext";
 
 const HomeComponent = () => {
     const auth = isAuthenticated();
-    const user = useAuth();
     const navigate = useNavigate();
 
     React.useEffect(() => {
@@ -19,12 +18,6 @@ const HomeComponent = () => {
 
     const {loading, error, data} = useQuery(GET_HOUSE_FOR_CURRENT_USER)
     const houses = data?.getHouseByUser;
-
-    if (error) {
-        if (error.errors.filter((error) => error.message === "TOKEN_EXPIRED")) {
-            navigate("/login")
-        }
-    }
 
     if (loading) {
         return (

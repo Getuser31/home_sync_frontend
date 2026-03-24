@@ -33,7 +33,6 @@ const ConsultHouse = () => {
             taskLife.assignedUsers.some(assignedUser => assignedUser.isActive === false)
         )
     )
-    console.log(tasksForDummyUsers)
 
     function mutateTask(taskId, task, userId) {
         userId = userId || null
@@ -80,9 +79,8 @@ const ConsultHouse = () => {
     const handleCheckTaskForDummyUser = (taskId) => {
         setMutationError(null)
         const task = tasksForDummyUsers.find(task => (task.id === taskId.taskId))
-        console.log(task)
         const dummyUsers = task.taskLives[0].assignedUsers.filter(user => user.isActive === false )
-        console.log(dummyUsers)
+
         if(dummyUsers.length === 1 ||  (task.taskLives[0].isCompleted)) {
             mutateTask(taskId, task)
         } else {
@@ -150,10 +148,8 @@ const ConsultHouse = () => {
                     </div>
                 )}
 
-                <div>
-                    <h2>
-                        Tasks for inactive users
-                    </h2>
+                <div className="mt-10 pt-8 border-t border-gray-100">
+                    <p className="mt-1 text-sm text-gray-400">Tasks for inactive users</p>
                     {house.currentUserRole.name === "admin" && (tasksForDummyUsers.length === 0 ? (
                         <p className="text-sm text-gray-400 italic">No tasks assigned to inactive user yet.</p>
                     ) : (
