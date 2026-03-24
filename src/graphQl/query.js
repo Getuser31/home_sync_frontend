@@ -91,7 +91,7 @@ export const GET_HOUSE_BY_ID = gql`
 
 export const GET_TASK_BY_ID = gql`
     query getTaskById($id: Int!){
-        getTaskById(id: $id){
+        getTaskById(taskId: $id){
             id
             title
             description

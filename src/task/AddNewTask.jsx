@@ -13,21 +13,29 @@ const AddNewTask = () => {
     const [description, setDescription] = useState('')
     const [taskRecurrence, setTaskRecurrence] = useState("")
     const [userId, setUserId] = useState("")
-    const [addTask, {loading: addTaskLoading}] = useMutation(ADD_NEW_TASK)
+    const [addTask] = useMutation(ADD_NEW_TASK)
+    const [errors, setErrors] = useState({})
 
     const house = houseData.data?.getHouseById
 
-    console.log(house)
-
-
-    if (loading) return <div>Loading...</div>;
+    if (loading || houseData.loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error.message}</div>;
-    if (!data) return <div>No data found.</div>;
+    if (!data || !house) return <div>No data found.</div>;
 
     const taskRecurrences = data.getTaskRecurrences;
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        const newErrors = {};
+        if (!title) newErrors.title = "Title is required.";
+        if (!description) newErrors.description = "Description is required.";
+        if (!taskRecurrence) newErrors.taskRecurrence = "Please select a recurrence.";
+        if (!userId) newErrors.userId = "Please select a user.";
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            return;
+        }
+        setErrors({});
         addTask({
             variables: {
                 title,
@@ -36,7 +44,8 @@ const AddNewTask = () => {
                 house_id: parseInt(houseId),
                 weight: 1,
                 user_id: parseInt(userId)
-            }
+            },
+            refetchQueries: [{ query: GET_HOUSE_BY_ID, variables: { id: parseInt(houseId) } }],
         }).then(() => {
            navigate(-1)
         }).catch((err) => {});
@@ -61,6 +70,7 @@ const AddNewTask = () => {
                             className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3.5 text-sm font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                             placeholder="e.g. Grocery Shopping"
                         />
+                        {errors.title && <p className="text-red-500 text-xs ml-1">{errors.title}</p>}
                     </div>
 
                     <div className="flex flex-col gap-1.5">
@@ -72,6 +82,7 @@ const AddNewTask = () => {
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                         />
+                        {errors.description && <p className="text-red-500 text-xs ml-1">{errors.description}</p>}
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -83,10 +94,12 @@ const AddNewTask = () => {
                                 value={taskRecurrence}
                                 onChange={(e) => setTaskRecurrence(e.target.value)}
                             >
+                                <option value="" disabled>Select a recurrence</option>
                                 {taskRecurrences.map((recurrence) => (
                                     <option key={recurrence.id} value={recurrence.id}>{recurrence.name}</option>
                                 ))}
                             </select>
+                            {errors.taskRecurrence && <p className="text-red-500 text-xs ml-1">{errors.taskRecurrence}</p>}
                         </div>
 
                         <div className="flex flex-col gap-1.5">
@@ -97,10 +110,12 @@ const AddNewTask = () => {
                                 value={userId}
                                 onChange={(e) => setUserId(e.target.value)}
                             >
+                                <option value="" disabled>Select a user</option>
                                 {house.users.map((user) => (
                                     <option key={user.id} value={user.id}>{user.name}</option>
                                 ))}
                             </select>
+                            {errors.userId && <p className="text-red-500 text-xs ml-1">{errors.userId}</p>}
                         </div>
                     </div>
 

@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {Link, useNavigate} from "react-router-dom";
 import {CREATE_NEW_HOUSE} from "../graphQl/mutation";
+import {GET_HOUSE_FOR_CURRENT_USER} from "../graphQl/query";
 import {useMutation} from "@apollo/client/react";
 
 const AddHouse = () => {
@@ -12,7 +13,7 @@ const AddHouse = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        createHouse({variables: {name}}).then((result) => {
+        createHouse({ variables: {name}, refetchQueries: [{ query: GET_HOUSE_FOR_CURRENT_USER }] }).then((result) => {
             const payload = result.data.createHouse;
             if (payload.__typename === 'HouseError') {
                 setErrors({global: payload.message});

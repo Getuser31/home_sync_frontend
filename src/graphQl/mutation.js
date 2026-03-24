@@ -44,6 +44,21 @@ export const CREATE_NEW_HOUSE = gql`
     }
 `
 
+export const REMOVE_HOUSE = gql`
+    mutation RemoveHouse($houseId: Int!) {
+        removeHouse(houseId: $houseId){
+            ... on House {
+                id
+                name
+                inviteCode
+            }
+            ... on HouseError {
+                message
+            }
+        }
+    }
+`
+
 export const JOIN_HOUSE_BY_INVITATION_CODE = gql`
     mutation join_house_by_invitation_code($inviteCode: String!) {
         joinHouseByInvitationCode(inviteCode: $inviteCode) {
@@ -60,11 +75,16 @@ export const JOIN_HOUSE_BY_INVITATION_CODE = gql`
 `
 
 export const ADD_NEW_TASK = gql`
-        mutation create_task($title: String!, $task_recurrence_id: Int!, $house_id: Int!, $description: String!, $weight: Int!, $user_id: Int!) {
+        mutation create_task($title: String!, $task_recurrence_id: Int!, $house_id: Int!, $description: String!, $weight: Int!, $user_id: Int) {
                 createTask(title: $title, taskRecurrenceId: $task_recurrence_id, houseId: $house_id, description: $description, weight: $weight, userId: $user_id) {
-                        title
-                        description
-                        weight
+                        ... on Task {
+                            title
+                            description
+                            weight
+                        }
+                        ... on UserError {
+                            message
+                        }
                 }
         }
 `
