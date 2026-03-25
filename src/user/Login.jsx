@@ -2,9 +2,11 @@ import React, {useState} from "react";
 import {useMutation} from "@apollo/client/react";
 import {LOGIN_MUTATION} from "../graphQl/mutation";
 import {Link, useNavigate} from "react-router-dom";
+import {useAuth} from "../AuthContext";
 
 const Login = () => {
     const [login, {loading}] = useMutation(LOGIN_MUTATION)
+    const {login: authLogin} = useAuth()
     const navigate = useNavigate()
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -20,10 +22,8 @@ const Login = () => {
                 if (payload.__typename === 'UserError') {
                     setErrors({global: payload.message})
                 } else {
-                    localStorage.setItem("userTokenHomeSync", payload.token)
-                    navigate(
-                        "/"
-                    )
+                    authLogin(payload)
+                    navigate("/")
                 }
             }).catch((err) => {
             console.log(err)

@@ -38,7 +38,7 @@ export const AuthProvider = ({children}) => {
     }, []);
 
     const login = (loginPayload) => {
-        if (loginPayload?.token && loginPayload?.user) {
+        if (loginPayload?.token) {
             const {token, user: userData} = loginPayload;
             localStorage.setItem("userTokenHomeSync", token)
             setUser({
