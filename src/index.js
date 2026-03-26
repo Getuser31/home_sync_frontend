@@ -37,7 +37,7 @@ const authLink = setContext((_, { headers }) => {
 });
 
 const client = new ApolloClient({
-    link: errorLink.concat(authLink).concat(createHttpLink({ uri: "http://127.0.0.1:8000/graphql" })),
+    link: errorLink.concat(authLink).concat(createHttpLink({ uri: process.env.REACT_APP_GRAPHQL_URL })),
     cache: new InMemoryCache({
         possibleTypes: {
             CreateUserResult: ['User', 'UserError'],
