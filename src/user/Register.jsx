@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {useMutation} from "@apollo/client/react";
 import {REGISTER_MUTATION} from "../graphQl/mutation";
+import {useNavigate} from "react-router-dom";
 
 const Register = () => {
     const [register, {loading}] = useMutation(REGISTER_MUTATION)
@@ -9,6 +10,7 @@ const Register = () => {
     const [email, setEmail] = useState("")
     const [passwordConfirmation, setPasswordConfirmation] = useState("")
     const [errors, setErrors] = useState({})
+    const navigate = useNavigate()
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -35,6 +37,11 @@ const Register = () => {
                     setErrors({ global: payload.message });
                 } else {
                     console.log("Registration successful");
+                    navigate("/login", {
+                        state: {
+                            message: "Registration successful! Please check your email for verification."
+                        }
+                    })
                 }
 
             })

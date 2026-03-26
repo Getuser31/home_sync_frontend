@@ -80,58 +80,46 @@ const ManageUsers = () => {
                     </div>
                 )}
 
-                <table className="w-full">
-                    <thead>
-                    <tr className="border-b border-gray-100">
-                        <th className="text-left text-xs font-bold text-gray-500 uppercase tracking-wider pb-3 px-2">Name</th>
-                        <th className="text-left text-xs font-bold text-gray-500 uppercase tracking-wider pb-3 px-2">Email</th>
-                        <th className="text-left text-xs font-bold text-gray-500 uppercase tracking-wider pb-3 px-2">Role</th>
-                        <th className="text-left text-xs font-bold text-gray-500 uppercase tracking-wider pb-3 px-2">Remove</th>
-                    </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-50">
+                <ul className="flex flex-col gap-3">
                     {house.users.map(user => (
-                        <tr key={user.email} className="group hover:bg-gray-50 transition-colors">
-                            <td className="py-3 px-2">
-                                <div className="flex items-center gap-3">
-                                    <div
-                                        className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-white text-sm font-bold shadow-sm group-hover:scale-110 transition-transform">
-                                        {user.name.charAt(0).toUpperCase()}
-                                    </div>
-                                    <span className="text-sm font-bold text-gray-800">{user.name}</span>
+                        <li key={user.email} className="bg-gray-50 border border-gray-100 rounded-2xl px-4 py-4 flex flex-col gap-3">
+                            <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 shrink-0 rounded-full bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-white text-sm font-bold shadow-sm">
+                                    {user.name.charAt(0).toUpperCase()}
                                 </div>
-                            </td>
-                            <td className="py-3 px-2 text-sm text-gray-500">{user.email}</td>
-                            <td className="py-3 px-2">
-                                <select onChange={(e) => handleUserRoleUpdate(e.target.value, user.id)}
-                                        value={user.roleHouseUsers[0]?.role?.id}
-                                        className="bg-indigo-100 text-indigo-700 text-xs font-bold px-2.5 py-1 rounded-full">
+                                <div className="flex flex-col min-w-0">
+                                    <span className="text-sm font-bold text-gray-800 truncate">{user.name}</span>
+                                    <span className="text-xs text-gray-400 truncate">{user.email}</span>
+                                </div>
+                            </div>
+                            <div className="flex items-center justify-between gap-2">
+                                <select
+                                    onChange={(e) => handleUserRoleUpdate(e.target.value, user.id)}
+                                    value={user.roleHouseUsers[0]?.role?.id}
+                                    className="bg-indigo-100 text-indigo-700 text-xs font-bold px-2.5 py-1 rounded-full"
+                                >
                                     {!user.roleHouseUsers[0]?.role && (
-                                        <option value="" disabled selected>No role</option>
+                                        <option value="" disabled>No role</option>
                                     )}
                                     {roles?.map(role => (
-                                        <option key={role.id} value={role.id}
-                                                selected={user.roleHouseUsers[0]?.role?.id === role.id}>{role.name}</option>
+                                        <option key={role.id} value={role.id}>{role.name}</option>
                                     ))}
                                 </select>
-                            </td>
-                            <td className="py-3 px-2">
                                 <button
                                     onClick={() => setConfirmUserId(user.id)}
                                     className="text-red-400 hover:text-red-600 text-xs font-bold transition-colors"
                                 >
                                     Remove
                                 </button>
-                            </td>
-                        </tr>
+                            </div>
+                        </li>
                     ))}
-                    </tbody>
-                </table>
+                </ul>
 
                 <div className="mt-8 pt-8 border-t border-gray-100">
                     <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Add User Without
                         Account</h2>
-                    <form className="flex gap-3" onSubmit={handleDummyUser}>
+                    <form className="flex flex-col sm:flex-row gap-3" onSubmit={handleDummyUser}>
                         <input
                             type="text"
                             name="username"

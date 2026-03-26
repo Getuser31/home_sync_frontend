@@ -2,6 +2,8 @@ import React, {useState} from "react";
 import {useMutation} from "@apollo/client/react";
 import {JOIN_HOUSE_BY_INVITATION_CODE} from "../graphQl/mutation";
 import {Link, useNavigate} from "react-router-dom";
+import {GET_HOUSE_FOR_CURRENT_USER} from "../graphQl/query";
+
 
 const JoinHouse = () => {
     const [invitationCode, setInvitationCode] = useState("");
@@ -13,7 +15,7 @@ const JoinHouse = () => {
     const onSubmit = (e) => {
         e.preventDefault();
 
-        join_house({variables: {inviteCode: invitationCode}}).then(
+        join_house({variables: {inviteCode: invitationCode}, refetchQueries: [{query: GET_HOUSE_FOR_CURRENT_USER}]}).then(
             (result) => {
                 const payload = result.data.joinHouseByInvitationCode;
                 console.log(payload)

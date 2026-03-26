@@ -49,7 +49,7 @@ const Profile = () => {
                 {/* Houses */}
                 <div>
                     <p className="text-indigo-600 font-bold text-xs uppercase tracking-widest mb-3">Houses</p>
-                    {user.roleHouseUsers.length === 0 ? (
+                    {user.roleHouseUsers?.length === 0 ? (
                         <p className="text-sm text-gray-400 italic">You are not part of any house yet.</p>
                     ) : (
                         <ul className="flex flex-col gap-3">

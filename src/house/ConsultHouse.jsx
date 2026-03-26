@@ -150,7 +150,7 @@ const ConsultHouse = () => {
 
                 <div className="mt-10 pt-8 border-t border-gray-100">
                     <p className="mt-1 text-sm text-gray-400">Tasks for inactive users</p>
-                    {house.currentUserRole.name === "admin" && (tasksForDummyUsers.length === 0 ? (
+                    {house.currentUserRole?.name === "admin" && (tasksForDummyUsers.length === 0 ? (
                         <p className="text-sm text-gray-400 italic">No tasks assigned to inactive user yet.</p>
                     ) : (
                         <div className="flex flex-col gap-6">
