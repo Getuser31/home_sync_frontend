@@ -7,6 +7,7 @@ import { ApolloProvider } from '@apollo/client/react';
 import { AuthProvider } from './AuthContext';
 import Router from './router';
 import reportWebVitals from './reportWebVitals';
+import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import {setContext} from "@apollo/client/link/context";
 
 const errorLink = new ApolloLink((operation, forward) => {
@@ -57,4 +58,5 @@ root.render(
   </React.StrictMode>
 );
 
+serviceWorkerRegistration.register();
 reportWebVitals();
