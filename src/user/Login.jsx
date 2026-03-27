@@ -10,13 +10,14 @@ const Login = () => {
     const navigate = useNavigate()
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [rememberMe, setRememberMe] = useState(false)
     const [errors, setErrors] = useState({})
 
 
     const handleSubmit = (e) => {
         e.preventDefault()
 
-        login({variables: {email, password}})
+        login({variables: {email, password, rememberMe}})
             .then((result) => {
                 const payload = result.data.login;
                 if (payload.__typename === 'UserError') {
@@ -59,6 +60,19 @@ const Login = () => {
                             placeholder="Enter your password"
                             className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm placeholder-gray-400"
                         />
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <input
+                            id="rememberMe"
+                            type="checkbox"
+                            name="rememberMe"
+                            checked={rememberMe}
+                            onChange={(e) => setRememberMe(e.target.checked)}
+                            className="w-4 h-4 rounded border-gray-300 text-blue-600 accent-blue-600 cursor-pointer"
+                        />
+                        <label htmlFor="rememberMe" className="text-sm font-medium text-gray-700 cursor-pointer select-none">
+                            Remember me
+                        </label>
                     </div>
                     <button
                         type="submit"
