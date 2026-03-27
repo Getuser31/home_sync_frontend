@@ -1,13 +1,11 @@
 import React, {useState} from 'react';
 import {Link, useNavigate} from "react-router-dom";
 import {useMutation, useQuery} from "@apollo/client/react"
-import {isAuthenticated} from "./utils/auth";
 import {GET_HOUSE_FOR_CURRENT_USER} from "./graphQl/query";
 import {REMOVE_HOUSE} from "./graphQl/mutation";
 
 
 const HomeComponent = () => {
-    const auth = isAuthenticated();
     const navigate = useNavigate();
     const [houseToDelete, setHouseToDelete] = useState(null)
 
@@ -17,12 +15,6 @@ const HomeComponent = () => {
         removeHouse({variables: {houseId: houseToDelete}, refetchQueries: [{ query: GET_HOUSE_FOR_CURRENT_USER }]})
         setHouseToDelete(null)
     }
-
-    React.useEffect(() => {
-        if (!auth) {
-            navigate("/login");
-        }
-    }, [auth, navigate]);
 
     const {loading, error, data} = useQuery(GET_HOUSE_FOR_CURRENT_USER)
     const houses = data?.getHouseByUser;

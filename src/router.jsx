@@ -13,11 +13,15 @@ import ConsultHouse from "./house/ConsultHouse";
 import ManageUsers from "./house/ManageUsers";
 import Profile from "./user/Profile";
 import PrivateRoute from "./PrivateRoute";
+import LandingPage from "./LandingPage";
 
 
 const Router = createBrowserRouter([
     {
         path: "/",
+        element: <LandingPage/>,
+    },
+    {
         element: <App/>,
         children: [
             {path: "/login", element: <Login/>},
@@ -25,7 +29,7 @@ const Router = createBrowserRouter([
             {
                 element: <PrivateRoute/>,
                 children: [
-                    {path: "/", element: <HomeComponent/>},
+                    {path: "/home", element: <HomeComponent/>},
                     {path: "/profile", element: <Profile/>},
                     {path: "/create_house", element: <AddHouse/>},
                     {path: "/join_house", element: <JoinHouse/>},
