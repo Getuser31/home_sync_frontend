@@ -29,6 +29,37 @@ export const REGISTER_MUTATION = gql`
    }
 `
 
+export const UPDATE_PASSWORD = gql`
+    mutation updatePassword($oldPassword: String!, $password: String!) {
+        updatePassword(password: $oldPassword, newPassword: $password) {
+            ... on User {
+                id
+                name
+                email
+            }
+            ... on UserError {
+                message
+            }
+        }
+    }
+`
+
+export const UPDATE_EMAIL = gql`
+    mutation updateEmail($email: String!, $password: String!) {
+        updateEmail(newEmail: $email, password: $password) {
+            ... on User {
+                id
+                name
+                email
+            }
+            ... on UserError {
+                message
+            }
+        }
+    }
+`
+
+
 export const CREATE_NEW_HOUSE = gql`
     mutation CreateNewHouse($name: String!) {
         createHouse(name: $name) {

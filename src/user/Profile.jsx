@@ -1,12 +1,74 @@
-import React from "react";
+import React, {useState} from "react";
 import {useAuth} from "../AuthContext";
+import {useMutation} from "@apollo/client/react";
+import {UPDATE_EMAIL, UPDATE_PASSWORD} from "../graphQl/mutation";
+import {GET_ME} from "../graphQl/query";
 
 const Profile = () => {
     const {user} = useAuth()
+    const [password, setPassword] = React.useState("")
+    const [confirmPassword, setConfirmPassword] = React.useState("")
+    const [oldPassword, setOldPassword] = React.useState("")
+    const [passwordForEmail, setPasswordForEmail] = React.useState("")
+    const [email, setEmail] = React.useState("")
+    const [isPasswordFormDisplay, setIsPasswordFormDisplay] = React.useState(false)
+    const [isEmailFormDisplay, setIsEmailFormDisplay] = React.useState(false)
+    const [updatePassword] = useMutation(UPDATE_PASSWORD)
+    const [updateEmail] = useMutation(UPDATE_EMAIL)
+    const [passwordError, setPasswordError] = useState(null)
+    const [passwordSuccess, setPasswordSuccess] = useState("")
+    const [emailError, setEmailError] = useState(null)
+    const [emailSuccess, setEmailSuccess] = useState("")
+
 
     const initials = user.name
         ? user.name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)
         : "?";
+
+    const handleUpdatePassword = (e) => {
+        e.preventDefault()
+        setPasswordError(null)
+        setPasswordSuccess("")
+        if (password !== confirmPassword) {
+            setPasswordError("Passwords do not match")
+            return
+        }
+        updatePassword({variables: {oldPassword, password}, refetchQueries: [{query: GET_ME}]})
+            .then((result) => {
+                if (result.data.updatePassword.__typename === "UserError") {
+                    setPasswordError(result.data.updatePassword.message)
+                    return
+                }
+                setPasswordSuccess("Password updated successfully")
+                setPassword("")
+                setConfirmPassword("")
+                setOldPassword("")
+                setTimeout(() => setIsPasswordFormDisplay(false), 2000)
+            })
+            .catch((err) => setPasswordError(err.message))
+    }
+
+    const handleUpdateEmail = (e) => {
+        e.preventDefault()
+        setEmailError(null)
+        setEmailSuccess("")
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            setEmailError("Please enter a valid email address")
+            return
+        }
+        updateEmail({variables: {email, password: passwordForEmail}, refetchQueries: [{query: GET_ME}]})
+            .then((result) => {
+                if (result.data.updateEmail.__typename === "UserError") {
+                    setEmailError(result.data.updateEmail.message)
+                    return
+                }
+                setEmailSuccess("Email updated successfully")
+                setEmail("")
+                setPasswordForEmail("")
+                setTimeout(() => setIsEmailFormDisplay(false), 2000)
+            })
+            .catch((err) => setEmailError(err.message))
+    }
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-start justify-center p-6">
@@ -42,6 +104,101 @@ const Profile = () => {
                                 <span className="text-xs text-gray-400">Email address</span>
                                 <span className="text-sm font-bold text-gray-800 truncate">{user.email}</span>
                             </div>
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col gap-3 mt-4">
+                        {/* Update Password */}
+                        <div className="border border-gray-100 rounded-2xl overflow-hidden">
+                            <button
+                                onClick={() => setIsPasswordFormDisplay(v => !v)}
+                                className="w-full flex items-center justify-between px-5 py-4 bg-gray-50 hover:bg-gray-100 transition-colors text-left"
+                            >
+                                <span className="text-sm font-semibold text-gray-700">Update Password</span>
+                                <svg className={`w-4 h-4 text-gray-400 transition-transform ${isPasswordFormDisplay ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            {isPasswordFormDisplay && (
+                                <form onSubmit={(e) => handleUpdatePassword(e)} className="flex flex-col gap-3 px-5 py-4 border-t border-gray-100">
+                                    <input
+                                        type="password"
+                                        placeholder="Current password"
+                                        value={oldPassword}
+                                        onChange={(e) => setOldPassword(e.target.value)}
+                                        className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    <input
+                                        type="password"
+                                        placeholder="New password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    <input
+                                        type="password"
+                                        placeholder="Confirm new password"
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    {passwordError && (
+                                        <p className="text-xs text-red-500 bg-red-50 border border-red-100 rounded-xl px-4 py-2.5">{passwordError}</p>
+                                    )}
+                                    {passwordSuccess && (
+                                        <p className="text-xs text-green-600 bg-green-50 border border-green-100 rounded-xl px-4 py-2.5">{passwordSuccess}</p>
+                                    )}
+                                    <button
+                                        type="submit"
+                                        className="self-end bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-5 py-2 rounded-xl transition-colors"
+                                    >
+                                        Save
+                                    </button>
+                                </form>
+                            )}
+                        </div>
+
+                        {/* Update Email */}
+                        <div className="border border-gray-100 rounded-2xl overflow-hidden">
+                            <button
+                                onClick={() => setIsEmailFormDisplay(v => !v)}
+                                className="w-full flex items-center justify-between px-5 py-4 bg-gray-50 hover:bg-gray-100 transition-colors text-left"
+                            >
+                                <span className="text-sm font-semibold text-gray-700">Update Email</span>
+                                <svg className={`w-4 h-4 text-gray-400 transition-transform ${isEmailFormDisplay ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            {isEmailFormDisplay && (
+                                <form onSubmit={(e) => {e.preventDefault(); handleUpdateEmail(e)}} className="flex flex-col gap-3 px-5 py-4 border-t border-gray-100">
+                                    <input
+                                        type="email"
+                                        placeholder="New email address"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    <input
+                                        type="password"
+                                        placeholder="Current password"
+                                        value={passwordForEmail}
+                                        onChange={(e) => setPasswordForEmail(e.target.value)}
+                                        className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    {emailError && (
+                                        <p className="text-xs text-red-500 bg-red-50 border border-red-100 rounded-xl px-4 py-2.5">{emailError}</p>
+                                    )}
+                                    {emailSuccess && (
+                                        <p className="text-xs text-green-600 bg-green-50 border border-green-100 rounded-xl px-4 py-2.5">{emailSuccess}</p>
+                                    )}
+                                    <button
+                                        type="submit"
+                                        className="self-end bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-5 py-2 rounded-xl transition-colors"
+                                    >
+                                        Save
+                                    </button>
+                                </form>
+                            )}
                         </div>
                     </div>
                 </div>
