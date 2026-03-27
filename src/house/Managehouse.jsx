@@ -28,7 +28,7 @@ const ManageHouse = () => {
                         <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide">Members</h3>
                         <Link to={`/manage_users/${house.id}`}>
                             <span className="bg-indigo-100 text-indigo-700 text-xs font-bold px-2.5 py-1 rounded-full">
-                                view all
+                                View All
                             </span>
                         </Link>
                     </div>
@@ -87,6 +87,7 @@ const ManageHouse = () => {
                     <div className="flex items-center justify-between mb-2">
                         <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Invite Code</p>
                         <button
+                            onClick={() => navigator.clipboard.writeText(house.inviteCode)}
                             className="text-indigo-600 hover:text-indigo-800 text-[10px] font-bold uppercase tracking-wider transition-colors">
                             Copy Code
                         </button>
