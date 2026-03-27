@@ -5,6 +5,11 @@ export const LOGIN_MUTATION = gql`
         login(email: $email, password: $password, rememberMe: $rememberMe) {
             ... on AuthPayload {
                 token
+                user {
+                    id
+                    name
+                    email
+                }
             }
             ... on UserError {
                 message
