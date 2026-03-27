@@ -89,7 +89,7 @@ const ConsultTask = () => {
     }
 
     const deleteTask = () => {
-        deleteTaskMutation({variables: {taskId: parseInt(taskId)}})
+        deleteTaskMutation({variables: {taskId: parseInt(taskId)}, refetchQueries: [{ query: GET_HOUSE_BY_ID, variables: { id: parseInt(houseId) } }]})
             .then(() => navigate(-1))
             .catch((error) => {
                 setErrorMessage(`Failed to delete task: ${error.message}`)
