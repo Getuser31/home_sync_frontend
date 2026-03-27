@@ -28,7 +28,7 @@ const ManageHouse = () => {
                         <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide">Members</h3>
                         <Link to={`/manage_users/${house.id}`}>
                             <span className="bg-indigo-100 text-indigo-700 text-xs font-bold px-2.5 py-1 rounded-full">
-                                {house.users.length} Total
+                                view all
                             </span>
                         </Link>
                     </div>
