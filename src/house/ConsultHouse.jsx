@@ -82,7 +82,7 @@ const ConsultHouse = () => {
         const dummyUsers = task.taskLives[0].assignedUsers.filter(user => user.isActive === false )
 
         if(dummyUsers.length === 1 ||  (task.taskLives[0].isCompleted)) {
-            mutateTask(taskId, task)
+            mutateTask(taskId, task, dummyUsers[0].id)
         } else {
             setShowSelectedUserModal({ status: true, selectedUser: task })
         }
