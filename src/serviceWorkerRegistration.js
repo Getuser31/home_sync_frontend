@@ -35,7 +35,16 @@ function registerValidSW(swUrl, config) {
           if (installingWorker.state === 'installed') {
             if (navigator.serviceWorker.controller) {
               console.log('New content available; please refresh.');
-              if (config && config.onUpdate) config.onUpdate(registration);
+              if (config && config.onUpdate) {
+                config.onUpdate(registration);
+              } else {
+                // No custom handler: tell the new SW to take over immediately
+                // then reload once the controller has changed.
+                installingWorker.postMessage({ type: 'SKIP_WAITING' });
+                navigator.serviceWorker.addEventListener('controllerchange', () => {
+                  window.location.reload();
+                }, { once: true });
+              }
             } else {
               console.log('Content is cached for offline use.');
               if (config && config.onSuccess) config.onSuccess(registration);
