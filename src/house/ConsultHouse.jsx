@@ -4,6 +4,7 @@ import {GET_HOUSE_BY_ID} from "../graphQl/query";
 import {useMutation, useQuery} from "@apollo/client/react";
 import {useAuth} from "../AuthContext";
 import {COMPLETE_TASK_FOR_USER, UNCOMPLETED_TASK_FOR_USER} from "../graphQl/mutation";
+import AdminNavigationBar from "./AdminNavigationBar";
 
 const ConsultHouse = () => {
     const {id: houseId} = useParams()
@@ -89,6 +90,8 @@ const ConsultHouse = () => {
     }
 
     return (
+        <div>
+            <AdminNavigationBar house={house}/>
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-start justify-center p-6">
             <div className="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-lg border border-white/50">
                 <div className="mb-8">
@@ -231,6 +234,7 @@ const ConsultHouse = () => {
                     </div>
                 </div>
             )}
+        </div>
         </div>
     )
 }

@@ -3,6 +3,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import {useMutation, useQuery} from "@apollo/client/react";
 import {GET_HOUSE_BY_ID, GET_TASK_RECURRENCES} from "../graphQl/query";
 import {ADD_NEW_TASK} from "../graphQl/mutation";
+import AdminNavigationBar from "../house/AdminNavigationBar";
 
 const AddNewTask = () => {
     const navigate = useNavigate();
@@ -52,6 +53,8 @@ const AddNewTask = () => {
     }
 
     return (
+        <>
+            <AdminNavigationBar house={house}/>
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
             <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-10 w-full max-w-md border border-white/50">
                 <div className="mb-8 text-center">
@@ -137,6 +140,7 @@ const AddNewTask = () => {
                 </form>
             </div>
         </div>
+        </>
     )
 }
 

@@ -3,6 +3,7 @@ import {useParams} from "react-router-dom";
 import {useMutation, useQuery} from "@apollo/client/react";
 import {GET_HOUSE_BY_ID, GET_ROLES} from "../graphQl/query";
 import {CREATE_DUMMY_USER_FOR_HOUSE, REMOVE_USER_FROM_HOUSE, UPDATE_USER_ROLE} from "../graphQl/mutation";
+import AdminNavigationBar from "./AdminNavigationBar";
 
 const ManageUsers = () => {
     const {houseId} = useParams()
@@ -66,6 +67,7 @@ const ManageUsers = () => {
 
     return (
         <>
+            <AdminNavigationBar house={house}/>
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
             <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-10 w-full max-w-2xl border border-white/50">
                 <div className="mb-8 text-center">
