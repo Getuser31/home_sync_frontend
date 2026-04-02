@@ -137,6 +137,7 @@ export const GET_ME = gql`
                 id
                 name
                 email
+                userConfiguration
                 roleHouseUsers {
                     house {
                         id

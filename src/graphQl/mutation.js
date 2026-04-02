@@ -64,6 +64,22 @@ export const UPDATE_EMAIL = gql`
     }
 `
 
+export const UPDATE_USER_CONFIGURATION = gql`
+    mutation updateUserConfiguration($userConfiguration: JSON!){
+        updateUserConfiguration(userConfiguration: $userConfiguration){
+            ... on User {
+                id
+                name
+                email
+                userConfiguration
+            }
+            ... on UserError {
+                message
+            }
+        }
+    }
+`
+
 
 export const CREATE_NEW_HOUSE = gql`
     mutation CreateNewHouse($name: String!) {

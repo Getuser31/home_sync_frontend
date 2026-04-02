@@ -8,7 +8,8 @@ const LandingPage = () => {
 
     React.useEffect(() => {
         if (!loading && user) {
-            navigate('/home');
+            const url = user.userConfiguration?.landingPage || '/home';
+            navigate(url);
         }
     }, [user, loading, navigate]);
 
