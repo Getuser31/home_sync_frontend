@@ -24,10 +24,25 @@ export function register(config) {
   }
 }
 
+function applyUpdate(registration) {
+  const waiting = registration.waiting;
+  if (!waiting) return;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    window.location.reload();
+  }, { once: true });
+  waiting.postMessage({ type: 'SKIP_WAITING' });
+}
+
 function registerValidSW(swUrl, config) {
   navigator.serviceWorker
     .register(swUrl)
     .then((registration) => {
+      // If a new SW is already waiting from a previous deploy, apply it now.
+      if (registration.waiting && navigator.serviceWorker.controller) {
+        applyUpdate(registration);
+        return;
+      }
+
       registration.onupdatefound = () => {
         const installingWorker = registration.installing;
         if (!installingWorker) return;
@@ -38,12 +53,7 @@ function registerValidSW(swUrl, config) {
               if (config && config.onUpdate) {
                 config.onUpdate(registration);
               } else {
-                // No custom handler: tell the new SW to take over immediately
-                // then reload once the controller has changed.
-                installingWorker.postMessage({ type: 'SKIP_WAITING' });
-                navigator.serviceWorker.addEventListener('controllerchange', () => {
-                  window.location.reload();
-                }, { once: true });
+                applyUpdate(registration);
               }
             } else {
               console.log('Content is cached for offline use.');
@@ -52,6 +62,13 @@ function registerValidSW(swUrl, config) {
           }
         };
       };
+
+      // Force an update check each time the user comes back to the tab.
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          registration.update();
+        }
+      });
     })
     .catch((error) => console.error('SW registration failed:', error));
 }
