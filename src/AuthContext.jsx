@@ -41,10 +41,14 @@ export const AuthProvider = ({children}) => {
         if (loginPayload?.token) {
             const {token, user: userData} = loginPayload;
             localStorage.setItem("userTokenHomeSync", token)
-            setUser({
-                  token,
-                  ...userData
-            })
+            setUser({ token, ...userData })
+            client.query({ query: GET_ME, fetchPolicy: "network-only" })
+                .then((result) => {
+                    if (result?.data?.getMe) {
+                        setUser({ token, ...result.data.getMe })
+                    }
+                })
+                .catch((error) => console.log(error))
         }
     }
 
