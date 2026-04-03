@@ -23,7 +23,7 @@ const Menu = () => {
         <nav className="bg-white shadow-sm border-b border-gray-100">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between h-16 items-center">
-                    <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.location.href = "/"}>
+                    <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.location.href = "/home"}>
                         <div className="bg-blue-600 p-2 rounded-lg">
                             <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
