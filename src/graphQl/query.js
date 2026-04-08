@@ -56,6 +56,8 @@ export const GET_HOUSE_BY_ID = gql`
                     title
                     description
                     weight
+                    timeToComplete
+                    dateCreated
                     taskLives {
                         id
                         isCompleted   

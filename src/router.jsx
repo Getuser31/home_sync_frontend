@@ -15,6 +15,7 @@ import Profile from "./user/Profile";
 import PrivateRoute from "./PrivateRoute";
 import LandingPage from "./LandingPage";
 import UpdateTask from "./task/UpdateTask";
+import HouseStatistics from "./house/HouseStatistics";
 
 
 const Router = createBrowserRouter([
@@ -35,6 +36,7 @@ const Router = createBrowserRouter([
                     {path: "/create_house", element: <AddHouse/>},
                     {path: "/join_house", element: <JoinHouse/>},
                     {path: "/manage_house/:name/:id", element: <ManageHouse/>},
+                    {path: "/house_statistics/:name/:id", element: <HouseStatistics/>},
                     {path: "/profile_house/:name/:id", element: <ConsultHouse/>},
                     {path: "/add_new_task/:houseId", element: <AddNewTask/>},
                     {path: "/update_task/:houseId/:taskName/:taskId", element: <UpdateTask/>},

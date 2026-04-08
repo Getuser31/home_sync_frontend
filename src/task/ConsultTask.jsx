@@ -4,6 +4,7 @@ import {useMutation, useQuery} from "@apollo/client/react";
 import {GET_HOUSE_BY_ID, GET_TASK_BY_ID} from "../graphQl/query";
 import {ASSIGN_TASK_TO_USER, DELETE_TASK, REMOVE_USER_FROM_TASK} from "../graphQl/mutation";
 import generatePeriodKey from "../utils/periodKeyService";
+import AdminNavigationBar from "../house/AdminNavigationBar";
 
 const ConsultTask = () => {
     const {houseId, taskId} = useParams()
@@ -137,6 +138,7 @@ const ConsultTask = () => {
 
     return (
         <>
+            <AdminNavigationBar house={house}/>
             <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-start justify-center p-6">
                 <div className="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-lg border border-white/50">
                     <div className="mb-8">
