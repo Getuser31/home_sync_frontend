@@ -96,6 +96,7 @@ export const GET_TASK_BY_ID = gql`
             title
             description
             weight
+            timeToComplete
             taskLives{
                 id
                 recurrence{

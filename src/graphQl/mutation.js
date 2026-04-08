@@ -141,6 +141,23 @@ export const ADD_NEW_TASK = gql`
         }
 `
 
+export const UPDATE_TASK = gql`
+    mutation update_task($id: Int!, $title: String!, $description: String!, $weight: Int!, $timeToComplete: Int!) {
+        updateTask(taskId : $id, taskTitle: $title, taskDescription: $description, taskWeight: $weight, taskTimeToComplete: $timeToComplete) {
+            ... on Task {
+                id
+                title
+                description
+                weight
+                timeToComplete
+            }
+            ... on TaskError {
+                message
+            }
+        }
+    }
+`
+
 export const DELETE_TASK = gql`
     mutation delete_task($taskId : Int!) {
         deleteTask(taskId: $taskId) {
