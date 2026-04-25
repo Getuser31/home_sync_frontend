@@ -2,7 +2,7 @@ import React, {createContext, useContext, useState, useEffect} from "react";
 import {useApolloClient} from "@apollo/client/react";
 import {GET_ME} from "./graphQl/query";
 
-const AuthContext = createContext(null)
+export const AuthContext = createContext(null)
 
 export const AuthProvider = ({children}) => {
     const [user, setUser] = useState(null)

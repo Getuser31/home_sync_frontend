@@ -5,9 +5,9 @@ import {GET_HOUSE_BY_ID} from "../graphQl/query";
 import generatePeriodKey from "../utils/periodKeyService";
 import AdminNavigationBar from "./AdminNavigationBar";
 
-const today = () => new Date().toISOString().split('T')[0]
+export const today = () => new Date().toISOString().split('T')[0]
 
-const countPeriodsBetween = (start, end, recurrenceName, frequencyDays) => {
+export const countPeriodsBetween = (start, end, recurrenceName, frequencyDays) => {
     const seen = new Set()
     const cursor = new Date(start)
     const endDate = new Date(end)
@@ -19,7 +19,7 @@ const countPeriodsBetween = (start, end, recurrenceName, frequencyDays) => {
     return seen.size
 }
 
-const formatDuration = (minutes) => {
+export const formatDuration = (minutes) => {
     if (!minutes) return '—'
     const h = Math.floor(minutes / 60)
     const m = minutes % 60
@@ -27,7 +27,7 @@ const formatDuration = (minutes) => {
     return m === 0 ? `${h}h` : `${h}h ${m}min`
 }
 
-const taskStats = (task, startDate, endDate) => {
+export const taskStats = (task, startDate, endDate) => {
     const rangeStart = new Date(startDate) > new Date(task.dateCreated) ? new Date(startDate) : new Date(task.dateCreated)
     const rangeEnd = new Date(endDate)
 

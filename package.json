@@ -26,6 +26,20 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "jest": {
+    "transformIgnorePatterns": [
+      "node_modules/(?!(react-native|@react-native|react-router-dom|react-router|@apollo/client|graphql)/)"
+    ],
+    "moduleNameMapper": {
+      "^react-router-dom$": "<rootDir>/node_modules/react-router-dom/dist/index.js",
+      "^react-router$": "<rootDir>/node_modules/react-router/dist/development/index.js",
+      "^react-router/dom$": "<rootDir>/node_modules/react-router/dist/development/dom-export.js",
+      "^@apollo/client$": "<rootDir>/__mocks__/@apollo/client.js",
+      "^@apollo/client/testing$": "<rootDir>/__mocks__/@apollo/client/testing.js",
+      "^@apollo/client/react$": "<rootDir>/__mocks__/@apollo/client/react.js",
+      "^@apollo/client/link/context$": "<rootDir>/__mocks__/@apollo/client/link/context.js"
+    }
+  },
   "eslintConfig": {
     "extends": [
       "react-app",
