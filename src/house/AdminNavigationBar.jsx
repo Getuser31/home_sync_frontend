@@ -1,11 +1,13 @@
 import React from "react";
 import {useAuth} from "../AuthContext";
 import {useNavigate, useLocation} from "react-router-dom";
+import {useTranslation} from "react-i18next";
 
 const AdminNavigationBar = ({ house }) => {
     const {user} = useAuth()
     const navigate = useNavigate()
     const location = useLocation()
+    const {t} = useTranslation()
 
     const isAdmin = () => {
         const houseUser = house.users?.find(u => u.id === Number(user?.id))
@@ -26,32 +28,32 @@ const AdminNavigationBar = ({ house }) => {
                             className={navBtn(`/profile_house/${house.name}/${house.id}`)}
                             onClick={() => navigate(`/profile_house/${house.name}/${house.id}`)}
                         >
-                            Tasks
+                            {t('admin_nav.tasks')}
                         </button>
                         <button
                             className={navBtn(`/manage_users/${house.id}`)}
                             onClick={() => navigate(`/manage_users/${house.id}`)}
                         >
-                            Users
+                            {t('admin_nav.users')}
                         </button>
                         <button
                             className={navBtn(`/manage_house/${house.name}/${house.id}`)}
                             onClick={() => navigate(`/manage_house/${house.name}/${house.id}`)}
                         >
-                            House
+                            {t('admin_nav.house')}
                         </button>
                         <button
                             className={navBtn(`/house_statistics/${house.name}/${house.id}`)}
                             onClick={() => navigate(`/house_statistics/${house.name}/${house.id}`)}
                         >
-                            Statistics
+                            {t('admin_nav.statistics')}
                         </button>
                         <div className="ml-auto pl-2 shrink-0">
                             <button
                                 className="px-3 py-1 rounded-xl bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition-colors whitespace-nowrap"
                                 onClick={() => navigate(`/add_new_task/${house.id}`)}
                             >
-                                + New Task
+                                {t('admin_nav.new_task')}
                             </button>
                         </div>
                     </div>

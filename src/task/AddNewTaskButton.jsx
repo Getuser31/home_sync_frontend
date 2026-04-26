@@ -1,8 +1,10 @@
 import React from "react";
 import {useNavigate} from "react-router-dom";
+import {useTranslation} from "react-i18next";
 
 const AddNewTaskButton = ({houseId, className}) => {
     const navigate = useNavigate()
+    const {t} = useTranslation()
     return (
         <button
         className={`w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-indigo-200 ${className ?? ''}`}
@@ -14,7 +16,7 @@ const AddNewTaskButton = ({houseId, className}) => {
                   d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
                   clipRule="evenodd"/>
         </svg>
-        Add New Task
+        {t('task.add_new_task')}
     </button>
     )
 }

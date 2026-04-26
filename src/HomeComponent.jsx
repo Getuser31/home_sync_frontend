@@ -3,10 +3,12 @@ import {Link, useNavigate} from "react-router-dom";
 import {useMutation, useQuery} from "@apollo/client/react"
 import {GET_HOUSE_FOR_CURRENT_USER} from "./graphQl/query";
 import {REMOVE_HOUSE} from "./graphQl/mutation";
+import {useTranslation} from "react-i18next";
 
 
 const HomeComponent = () => {
     const navigate = useNavigate();
+    const {t} = useTranslation();
     const [houseToDelete, setHouseToDelete] = useState(null)
 
     const [removeHouse] = useMutation(REMOVE_HOUSE)
@@ -40,7 +42,7 @@ const HomeComponent = () => {
                     </div>
                     <div className="ml-3">
                         <p className="text-sm text-red-700">
-                            Error loading houses. Please try again later.
+                            {t('home.error')}
                         </p>
                     </div>
                 </div>
@@ -51,19 +53,19 @@ const HomeComponent = () => {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center border-b pb-4">
-                <h2 className="text-2xl font-bold text-gray-800">Your Houses</h2>
+                <h2 className="text-2xl font-bold text-gray-800">{t('home.your_houses')}</h2>
                 <div className="flex gap-3">
                     <button
                         className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors shadow-md"
                         onClick={() => navigate("/join_house")}
                     >
-                        + Join House
+                        {t('home.join_house')}
                     </button>
                     <button
                         className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors shadow-md"
                         onClick={() => navigate("/create_house")}
                     >
-                        + Add House
+                        {t('home.add_house')}
                     </button>
                 </div>
             </div>
@@ -99,7 +101,7 @@ const HomeComponent = () => {
                                 <h3 className="text-lg font-extrabold text-gray-900 mb-3">{house.name}</h3>
                                 <div className="flex items-center gap-2">
                                     <span
-                                        className="text-xs font-semibold uppercase tracking-wider text-gray-400">Invite</span>
+                                        className="text-xs font-semibold uppercase tracking-wider text-gray-400">{t('home.invite')}</span>
                                     <code
                                         className="bg-indigo-50 text-indigo-600 font-bold text-xs px-2 py-1 rounded-lg">{house.inviteCode}</code>
                                 </div>
@@ -110,7 +112,7 @@ const HomeComponent = () => {
                                 <Link to={`/profile_house/${house.name}/${house.id}`} className="w-full">
                                     <button
                                         className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-xl transition-colors text-sm">
-                                        Consult House
+                                        {t('home.consult_house')}
                                     </button>
                                 </Link>
                                 {house.currentUserRole?.name === "admin" && (
@@ -118,14 +120,14 @@ const HomeComponent = () => {
                                         <Link to={`/manage_house/${house.name}/${house.id}`} className="w-full">
                                             <button
                                                 className="w-full border border-gray-200 hover:bg-gray-50 text-gray-600 font-semibold py-2 rounded-xl transition-colors text-sm">
-                                                Manage House
+                                                {t('home.manage_house')}
                                             </button>
                                         </Link>
                                         <button
                                             className="w-full border border-red-200 hover:bg-red-50 text-red-500 font-semibold py-2 rounded-xl transition-colors text-sm"
                                             onClick={() => setHouseToDelete(house.id)}
                                         >
-                                            Delete House
+                                            {t('home.delete_house')}
                                         </button>
                                     </>
                                 )}
@@ -142,28 +144,28 @@ const HomeComponent = () => {
                                   d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                         </svg>
                     </div>
-                    <h3 className="text-lg font-medium text-gray-900">No houses found</h3>
-                    <p className="mt-1 text-gray-500">Get started by creating your first house.</p>
+                    <h3 className="text-lg font-medium text-gray-900">{t('home.no_houses_title')}</h3>
+                    <p className="mt-1 text-gray-500">{t('home.no_houses_desc')}</p>
                 </div>
             )}
 
             {houseToDelete && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-sm mx-4">
-                        <h2 className="text-lg font-bold text-gray-900 mb-2">Delete House</h2>
-                        <p className="text-sm text-gray-500 mb-6">Are you sure you want to delete this house? This action cannot be undone.</p>
+                        <h2 className="text-lg font-bold text-gray-900 mb-2">{t('home.delete_modal_title')}</h2>
+                        <p className="text-sm text-gray-500 mb-6">{t('home.delete_modal_message')}</p>
                         <div className="flex gap-3">
                             <button
                                 onClick={() => setHouseToDelete(null)}
                                 className="flex-1 border border-gray-200 hover:bg-gray-50 text-gray-600 font-semibold py-2.5 rounded-xl transition-colors text-sm"
                             >
-                                Cancel
+                                {t('home.cancel')}
                             </button>
                             <button
                                 onClick={handleRemoveHouse}
                                 className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
                             >
-                                Delete
+                                {t('home.delete')}
                             </button>
                         </div>
                     </div>

@@ -12,6 +12,8 @@ A React-based web application for managing shared household tasks. Users can cre
 - **Role-based Access** - Admin-only sections (e.g. inactive user tasks) are gated by `currentUserRole`
 - **Task Management** - Add tasks with recurrence schedules and member assignments
 - **Task Completion** - Check off tasks; when multiple inactive users are assigned, a modal prompts to select who completed it
+- **House Statistics** - Per-house task completion stats filtered by user and date range, with time-spent tracking
+- **Internationalisation** - Full French/English support via i18next; language switcher (🇬🇧 / 🇫🇷) in the navigation bar, persisted in `localStorage`
 - **Error Handling** - GraphQL union errors (`UserError`, `HouseError`) are displayed inline
 - **Mobile-responsive** - All pages, including ManageUsers, are designed for small screens
 
@@ -20,6 +22,7 @@ A React-based web application for managing shared household tasks. Users can cre
 - **React 19** with React Router v7
 - **Apollo Client** for GraphQL communication
 - **Tailwind CSS** for styling
+- **i18next / react-i18next** for internationalisation (EN + FR)
 - **Create React App** as the build toolchain
 
 ## Getting Started
@@ -73,8 +76,10 @@ All routes except `/login` and `/register` are protected by `PrivateRoute` — u
 | `/profile_house/:name/:id` | Consult house tasks assigned to the current user |
 | `/add_new_task/:houseId` | Add a new task to a house |
 | `/consult_task/:houseId/:taskName/:taskId` | View and interact with a specific task |
+| `/update_task/:houseId/:taskName/:taskId` | Edit an existing task's title, description, weight and duration |
 | `/all_tasks/:houseId` | List all tasks in a house |
 | `/manage_users/:houseId` | Manage house members, roles, and dummy users |
+| `/house_statistics/:name/:id` | Task completion statistics for a house |
 
 ## Project Structure
 
@@ -85,30 +90,53 @@ src/
 │   └── mutation.js     # GraphQL mutations
 ├── house/
 │   ├── AddHouse.jsx
+│   ├── AdminNavigationBar.jsx
 │   ├── JoinHouse.jsx
 │   ├── Managehouse.jsx
 │   ├── ConsultHouse.jsx
+│   ├── HouseStatistics.jsx
 │   └── ManageUsers.jsx
 ├── task/
 │   ├── AddNewTask.jsx
 │   ├── AddNewTaskButton.jsx
 │   ├── AllTasks.jsx
-│   └── ConsultTask.jsx
+│   ├── ConsultTask.jsx
+│   └── UpdateTask.jsx
 ├── user/
 │   ├── Login.jsx
 │   ├── Register.jsx
 │   └── Profile.jsx
+├── locales/
+│   ├── en/translation.json
+│   └── fr/translation.json
 ├── utils/
 │   ├── auth.js              # Auth helpers
 │   └── periodKeyService.js
 ├── App.js
 ├── AuthContext.jsx
 ├── HomeComponent.jsx
+├── i18n.js                  # i18next initialisation
+├── LanguageSwitcher.jsx
 ├── Menu.jsx
 └── router.jsx
 ```
 
 ## Key Behaviours
+
+### Internationalisation
+- Supported languages: **English** and **French**
+- The language switcher (flag + code) is displayed in both the desktop nav and the mobile menu
+- The selected language is persisted in `localStorage` under the key `i18nextLng`
+- On first visit, the browser language is detected and used if it is `en` or `fr`; otherwise it falls back to English
+- All UI strings — labels, placeholders, validation messages, success/error toasts — are translated
+- Translation files live in `src/locales/{en,fr}/translation.json`
+
+### HouseStatistics (`/house_statistics/:name/:id`)
+- Visible to admins only via the `AdminNavigationBar`
+- Filter completions by user (all or a specific member) and by date range
+- The range start defaults to the beginning of the current week (Monday 00:00:00)
+- Each task card shows actual vs. expected completions and a progress bar
+- Total time spent is shown at the bottom when `timeToComplete` data is available
 
 ### ManageUsers (`/manage_users/:houseId`)
 - Displays members as responsive cards (no table) — works on all screen sizes

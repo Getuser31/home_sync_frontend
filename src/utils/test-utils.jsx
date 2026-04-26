@@ -3,6 +3,7 @@ import {render} from "@testing-library/react";
 import {MemoryRouter} from "react-router-dom";
 import {MockedProvider} from "@apollo/client/testing";
 import {AuthContext} from "../AuthContext";
+import "../i18n";
 
 const defaultAuthValue = {
     user: null,

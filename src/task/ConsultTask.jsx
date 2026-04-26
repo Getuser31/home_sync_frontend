@@ -5,10 +5,12 @@ import {GET_HOUSE_BY_ID, GET_TASK_BY_ID} from "../graphQl/query";
 import {ASSIGN_TASK_TO_USER, DELETE_TASK, REMOVE_USER_FROM_TASK} from "../graphQl/mutation";
 import generatePeriodKey from "../utils/periodKeyService";
 import AdminNavigationBar from "../house/AdminNavigationBar";
+import {useTranslation} from "react-i18next";
 
 const ConsultTask = () => {
     const {houseId, taskId} = useParams()
     const navigate = useNavigate()
+    const {t} = useTranslation()
     const {loading, error, data} = useQuery(GET_TASK_BY_ID, {variables: {id: parseInt(taskId)}})
     const {
         loading: loadingHouse,
@@ -32,7 +34,7 @@ const ConsultTask = () => {
                 <div className="flex flex-col items-center gap-4">
                     <div
                         className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
-                    <p className="text-indigo-800 font-medium animate-pulse">Loading details...</p>
+                    <p className="text-indigo-800 font-medium animate-pulse">{t('task.loading_tasks')}</p>
                 </div>
             </div>
         );
@@ -43,7 +45,7 @@ const ConsultTask = () => {
             <div
                 className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-6">
                 <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md border-l-4 border-red-500">
-                    <h3 className="text-lg font-bold text-red-600 mb-2">Error</h3>
+                    <h3 className="text-lg font-bold text-red-600 mb-2">{t('task.error_title')}</h3>
                     <p className="text-gray-600">{combinedError.message}</p>
                 </div>
             </div>
@@ -58,7 +60,7 @@ const ConsultTask = () => {
             <div
                 className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-6">
                 <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md text-center">
-                    <p className="text-gray-500 font-medium">Data not found.</p>
+                    <p className="text-gray-500 font-medium">{t('task.no_data')}</p>
                 </div>
             </div>
         );
@@ -109,7 +111,7 @@ const ConsultTask = () => {
 
     const taskCompletionForCurrentMonth = (taskLife) => {
         const recurrence = taskLife.recurrence.name
-        const currentMonth = new Date().getMonth(); // 0-indexed
+        const currentMonth = new Date().getMonth();
         const currentYear = new Date().getFullYear();
         const actualDayNumber = new Date().getDate();
         const weekOfTheMonth = (date = new Date()) => {
@@ -142,7 +144,7 @@ const ConsultTask = () => {
             <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-start justify-center p-6">
                 <div className="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-lg border border-white/50">
                     <div className="mb-8">
-                        <p className="text-indigo-600 font-bold text-xs uppercase tracking-widest mb-1">Task</p>
+                        <p className="text-indigo-600 font-bold text-xs uppercase tracking-widest mb-1">{t('task.task_label')}</p>
                         <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">{task.title}</h1>
                         {task.description && (
                             <p className="mt-2 text-sm text-gray-500">{task.description}</p>
@@ -164,7 +166,7 @@ const ConsultTask = () => {
                             <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
                                 <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd"/>
                             </svg>
-                            Delete Task
+                            {t('task.delete_task')}
                         </button>
                         <button
                             onClick={() => navigate(`/update_task/${houseId}/${task.title}/${taskId}`)}
@@ -173,7 +175,7 @@ const ConsultTask = () => {
                             <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
                                 <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
                             </svg>
-                            Update Task
+                            {t('task.update_task')}
                         </button>
                     </div>
 
@@ -183,7 +185,7 @@ const ConsultTask = () => {
                                 <div className="flex items-center justify-between mb-4">
                                     <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wide">{taskLife.recurrence.name}</h2>
                                     <span className="bg-indigo-100 text-indigo-700 text-xs font-bold px-2.5 py-1 rounded-full">
-                                        Every {taskLife.recurrence.frequencyDays}d
+                                        {t('task.every_days', {days: taskLife.recurrence.frequencyDays})}
                                     </span>
                                 </div>
 
@@ -204,18 +206,18 @@ const ConsultTask = () => {
                                         ))}
                                     </ul>
                                 ) : (
-                                    <p className="text-xs text-gray-400 italic">No completions yet.</p>
+                                    <p className="text-xs text-gray-400 italic">{t('task.no_completions')}</p>
                                 )}
 
 
                                 <div className="mt-4 flex items-center justify-between bg-indigo-50 border border-indigo-100 rounded-xl px-4 py-3">
-                                    <span className="text-xs font-bold text-indigo-700 uppercase tracking-wide">This month</span>
+                                    <span className="text-xs font-bold text-indigo-700 uppercase tracking-wide">{t('task.this_month')}</span>
                                     <span className="text-lg font-extrabold text-indigo-600">{taskCompletionForCurrentMonth(taskLife) ?? "—"}<span className="text-xs font-semibold ml-0.5">%</span></span>
                                 </div>
 
                                 <div className="mt-4 border border-gray-100 rounded-xl p-4 bg-gray-50/50">
                                     <label className="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">
-                                        Check a specific date
+                                        {t('task.check_specific_date')}
                                     </label>
                                     <input
                                         type="date"
@@ -242,14 +244,14 @@ const ConsultTask = () => {
                                                 ))}
                                             </ul>
                                         ) : (
-                                            <p className="mt-3 text-xs text-gray-400 italic">No completions for this period.</p>
+                                            <p className="mt-3 text-xs text-gray-400 italic">{t('task.no_completions_period')}</p>
                                         )
                                     })()}
                                 </div>
 
                                 {taskLife.assignedUsers.length > 0 ? (
                                     <div className="mt-4">
-                                        <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-2">Assigned To</h3>
+                                        <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-2">{t('task.assigned_to_label')}</h3>
                                         <ul className="flex flex-col gap-2">
                                             {taskLife.assignedUsers.map((user) => (
                                                 <li key={user.id} className="flex items-center gap-3 bg-white border border-gray-100 rounded-xl px-4 py-2.5 shadow-sm">
@@ -268,19 +270,19 @@ const ConsultTask = () => {
                                         </ul>
                                     </div>
                                 ) : (
-                                    <p className="text-xs text-gray-400 italic mt-4">No users assigned yet.</p>
+                                    <p className="text-xs text-gray-400 italic mt-4">{t('task.no_users_assigned')}</p>
                                 )}
 
                                 <div className="mt-5">
                                     <label className="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">
-                                        Assign to member
+                                        {t('task.assign_to_member')}
                                     </label>
                                     <select
                                         className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-700 font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition"
                                         disabled={assignedNewUser.length === 0}
                                         onChange={assignUser}
                                     >
-                                        <option value="">Select a member</option>
+                                        <option value="">{t('task.select_member')}</option>
                                         {assignedNewUser.map((user) => (
                                             <option key={user.id} value={user.id}>{user.name}</option>
                                         ))}
@@ -301,22 +303,22 @@ const ConsultTask = () => {
                                 <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd"/>
                             </svg>
                         </div>
-                        <h2 className="text-lg font-extrabold text-gray-900 text-center mb-1">Delete Task</h2>
+                        <h2 className="text-lg font-extrabold text-gray-900 text-center mb-1">{t('task.delete_task')}</h2>
                         <p className="text-sm text-gray-500 text-center mb-6">
-                            Are you sure you want to delete <span className="font-semibold text-gray-700">"{task.title}"</span>? This action cannot be undone.
+                            {t('task.delete_task_confirm', {taskTitle: task.title})}
                         </p>
                         <div className="flex gap-3">
                             <button
                                 onClick={() => setShowDeleteModal(false)}
                                 className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-bold text-gray-600 hover:bg-gray-50 transition-colors"
                             >
-                                Cancel
+                                {t('task.cancel_delete')}
                             </button>
                             <button
                                 onClick={deleteTask}
                                 className="flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-sm font-bold text-white transition-colors"
                             >
-                                Delete
+                                {t('task.confirm_delete')}
                             </button>
                         </div>
                     </div>

@@ -1,10 +1,13 @@
 import React, {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "./AuthContext";
+import LanguageSwitcher from "./LanguageSwitcher";
+import {useTranslation} from "react-i18next";
 
 const Menu = () => {
     const navigate = useNavigate()
     const {user, logout} = useAuth()
+    const {t} = useTranslation()
     const [isHouseMenuDisplay, setIsHouseMenuDisplay] = useState(false)
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
@@ -37,6 +40,7 @@ const Menu = () => {
 
                     {/* Desktop nav */}
                     <div className="hidden sm:flex items-center gap-4">
+                        <LanguageSwitcher />
                         {user ? (
                             <>
                                 <div className="relative">
@@ -47,7 +51,7 @@ const Menu = () => {
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                                         </svg>
-                                        Houses
+                                        {t('menu.houses')}
                                         <svg className={`w-3.5 h-3.5 transition-transform ${isHouseMenuDisplay ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7"/>
                                         </svg>
@@ -70,19 +74,19 @@ const Menu = () => {
                                     onClick={() => navigate("/profile")}
                                     className="px-3 py-1.5 rounded-lg text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 text-sm font-semibold transition-colors"
                                 >
-                                    Profile
+                                    {t('menu.profile')}
                                 </button>
                                 <button
                                     onClick={handleLogout}
                                     className="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold transition-colors border border-gray-200"
                                 >
-                                    Logout
+                                    {t('menu.logout')}
                                 </button>
                             </>
                         ) : (
                             <button onClick={() => navigate("/login")}
                                     className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
-                                Login
+                                {t('menu.login')}
                             </button>
                         )}
                     </div>
@@ -108,6 +112,7 @@ const Menu = () => {
             {/* Mobile menu */}
             {isMobileMenuOpen && (
                 <div className="sm:hidden border-t border-gray-100 px-4 py-3 flex flex-col gap-1">
+                    <div className="px-3 py-2"><LanguageSwitcher /></div>
                     {user ? (
                         <>
                             <button
@@ -118,7 +123,7 @@ const Menu = () => {
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                                     </svg>
-                                    Houses
+                                    {t('menu.houses')}
                                 </span>
                                 <svg className={`w-3.5 h-3.5 transition-transform ${isHouseMenuDisplay ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7"/>
@@ -141,13 +146,13 @@ const Menu = () => {
                                 onClick={() => handleNavigate("/profile")}
                                 className="px-3 py-2.5 rounded-lg text-left text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 text-sm font-semibold transition-colors"
                             >
-                                Profile
+                                {t('menu.profile')}
                             </button>
                             <button
                                 onClick={handleLogout}
                                 className="px-3 py-2.5 rounded-lg text-left text-gray-700 hover:bg-gray-100 text-sm font-semibold transition-colors border border-gray-200 mt-1"
                             >
-                                Logout
+                                {t('menu.logout')}
                             </button>
                         </>
                     ) : (
@@ -155,7 +160,7 @@ const Menu = () => {
                             onClick={() => handleNavigate("/login")}
                             className="px-3 py-2.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold transition-colors"
                         >
-                            Login
+                            {t('menu.login')}
                         </button>
                     )}
                 </div>

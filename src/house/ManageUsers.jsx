@@ -4,9 +4,11 @@ import {useMutation, useQuery} from "@apollo/client/react";
 import {GET_HOUSE_BY_ID, GET_ROLES} from "../graphQl/query";
 import {CREATE_DUMMY_USER_FOR_HOUSE, REMOVE_USER_FROM_HOUSE, UPDATE_USER_ROLE} from "../graphQl/mutation";
 import AdminNavigationBar from "./AdminNavigationBar";
+import {useTranslation} from "react-i18next";
 
 const ManageUsers = () => {
     const {houseId} = useParams()
+    const {t} = useTranslation()
     const {loading, error, data} = useQuery(GET_HOUSE_BY_ID, {variables: {id: parseInt(houseId)}})
     const {data: roleData} = useQuery(GET_ROLES)
     const [mutationError, setMutationError] = useState(null)
@@ -111,7 +113,7 @@ const ManageUsers = () => {
                                     onClick={() => setConfirmUserId(user.id)}
                                     className="text-red-400 hover:text-red-600 text-xs font-bold transition-colors"
                                 >
-                                    Remove
+                                    {t('house.remove')}
                                 </button>
                             </div>
                         </li>
@@ -119,13 +121,12 @@ const ManageUsers = () => {
                 </ul>
 
                 <div className="mt-8 pt-8 border-t border-gray-100">
-                    <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Add User Without
-                        Account</h2>
+                    <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">{t('house.add_user_no_account')}</h2>
                     <form className="flex flex-col sm:flex-row gap-3" onSubmit={handleDummyUser}>
                         <input
                             type="text"
                             name="username"
-                            placeholder="Username"
+                            placeholder={t('house.username_placeholder')}
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             required
@@ -135,7 +136,7 @@ const ManageUsers = () => {
                             type="submit"
                             className="px-5 py-2 rounded-xl bg-indigo-600 text-white text-sm font-bold hover:bg-indigo-700 transition-colors"
                         >
-                            Add User
+                            {t('house.add_user')}
                         </button>
                     </form>
                 </div>
@@ -145,20 +146,20 @@ const ManageUsers = () => {
         {confirmUserId && (
             <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
                 <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm mx-4">
-                    <h3 className="text-lg font-extrabold text-gray-900 mb-2">Remove user?</h3>
-                    <p className="text-sm text-gray-500 mb-6">This action cannot be undone.</p>
+                    <h3 className="text-lg font-extrabold text-gray-900 mb-2">{t('house.remove_user_title')}</h3>
+                    <p className="text-sm text-gray-500 mb-6">{t('house.remove_user_message')}</p>
                     <div className="flex gap-3 justify-end">
                         <button
                             onClick={() => setConfirmUserId(null)}
                             className="px-5 py-2 rounded-xl border border-gray-200 text-sm font-bold text-gray-600 hover:bg-gray-50 transition-colors"
                         >
-                            Cancel
+                            {t('house.cancel')}
                         </button>
                         <button
                             onClick={handleRemoveUser}
                             className="px-5 py-2 rounded-xl bg-red-600 text-white text-sm font-bold hover:bg-red-700 transition-colors"
                         >
-                            Remove
+                            {t('house.remove')}
                         </button>
                     </div>
                 </div>

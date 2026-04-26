@@ -3,9 +3,11 @@ import {useNavigate, useParams} from "react-router-dom";
 import {useMutation, useQuery} from "@apollo/client/react";
 import {GET_TASK_BY_ID} from "../graphQl/query";
 import {UPDATE_TASK} from "../graphQl/mutation";
+import {useTranslation} from "react-i18next";
 
 const UpdateTask = () => {
     const {taskId} = useParams()
+    const {t} = useTranslation()
     const {loading, error, data} = useQuery(GET_TASK_BY_ID, {variables: {id: parseInt(taskId)}})
     const [title, setTitle] = useState("")
     const [description, setDescription] = useState("")
@@ -31,10 +33,10 @@ const UpdateTask = () => {
     const handleSubmit = (e) => {
         e.preventDefault()
         const newErrors = {}
-        if (!title) newErrors.title = "Title is required"
-        if (!description) newErrors.description = "Description is required"
-        if (!weight) newErrors.weight = "Weight is required"
-        if (!timeToComplete) newErrors.timeToComplete = "Time to complete is required"
+        if (!title) newErrors.title = t('task.title_required')
+        if (!description) newErrors.description = t('task.description_required')
+        if (!weight) newErrors.weight = t('task.weight_required')
+        if (!timeToComplete) newErrors.timeToComplete = t('task.time_required')
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors)
             return
@@ -44,7 +46,7 @@ const UpdateTask = () => {
             if (result.errors) {
                 setErrors({server: result.errors.map(e => e.message).join(", ")})
             } else {
-                setSuccessMessage("Task updated successfully")
+                setSuccessMessage(t('task.task_updated'))
                 setTimeout(() => setSuccessMessage(""), 2000)
                 setTimeout(() => navigate(-1), 2000)
             }
@@ -55,8 +57,8 @@ const UpdateTask = () => {
         <form onSubmit={handleSubmit} className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-start justify-center p-6">
             <div className="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-lg border border-white/50">
                 <div className="mb-8">
-                    <p className="text-indigo-600 font-bold text-xs uppercase tracking-widest mb-1">Task</p>
-                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Update Task</h1>
+                    <p className="text-indigo-600 font-bold text-xs uppercase tracking-widest mb-1">{t('task.task_label')}</p>
+                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">{t('task.update_task')}</h1>
                 </div>
 
                 {successMessage && <p className="mb-4 text-green-600 text-xs font-medium bg-green-50 border border-green-200 rounded-xl px-4 py-3">{successMessage}</p>}
@@ -64,7 +66,7 @@ const UpdateTask = () => {
 
                 <div className="flex flex-col gap-5">
                     <div className="flex flex-col gap-1.5">
-                        <label className="text-xs font-bold text-gray-700 uppercase tracking-wide">Title</label>
+                        <label className="text-xs font-bold text-gray-700 uppercase tracking-wide">{t('task.title')}</label>
                         <input
                             type="text"
                             value={title}
@@ -75,7 +77,7 @@ const UpdateTask = () => {
                     </div>
 
                     <div className="flex flex-col gap-1.5">
-                        <label className="text-xs font-bold text-gray-700 uppercase tracking-wide">Description</label>
+                        <label className="text-xs font-bold text-gray-700 uppercase tracking-wide">{t('task.description')}</label>
                         <input
                             type="text"
                             value={description}
@@ -88,8 +90,8 @@ const UpdateTask = () => {
                     <div className="flex gap-4">
                         <div className="flex flex-col gap-1.5 flex-1">
                             <div className="flex items-baseline justify-between">
-                                <label className="text-xs font-bold text-gray-700 uppercase tracking-wide">Weight</label>
-                                <span className="text-xs text-gray-400">Penibility 1 – 10</span>
+                                <label className="text-xs font-bold text-gray-700 uppercase tracking-wide">{t('task.weight')}</label>
+                                <span className="text-xs text-gray-400">{t('task.weight_hint')}</span>
                             </div>
                             <input
                                 type="number"
@@ -104,8 +106,8 @@ const UpdateTask = () => {
 
                         <div className="flex flex-col gap-1.5 flex-1">
                             <div className="flex items-baseline justify-between">
-                                <label className="text-xs font-bold text-gray-700 uppercase tracking-wide">Time to Complete</label>
-                                <span className="text-xs text-gray-400">Max 480 min (8h)</span>
+                                <label className="text-xs font-bold text-gray-700 uppercase tracking-wide">{t('task.time_to_complete')}</label>
+                                <span className="text-xs text-gray-400">{t('task.time_hint')}</span>
                             </div>
                             <input
                                 type="number"
@@ -121,7 +123,7 @@ const UpdateTask = () => {
 
                     <button
                         className="mt-2 w-full py-2.5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-sm font-bold text-white transition-colors">
-                        Save Changes
+                        {t('task.save_changes')}
                     </button>
                 </div>
             </div>

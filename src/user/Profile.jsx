@@ -3,9 +3,11 @@ import {useAuth} from "../AuthContext";
 import {useMutation} from "@apollo/client/react";
 import {UPDATE_EMAIL, UPDATE_PASSWORD, UPDATE_USER_CONFIGURATION} from "../graphQl/mutation";
 import {GET_ME} from "../graphQl/query";
+import {useTranslation} from "react-i18next";
 
 const Profile = () => {
     const {user} = useAuth()
+    const {t} = useTranslation()
     const [password, setPassword] = React.useState("")
     const [confirmPassword, setConfirmPassword] = React.useState("")
     const [oldPassword, setOldPassword] = React.useState("")
@@ -39,7 +41,7 @@ const Profile = () => {
         setPasswordError(null)
         setPasswordSuccess("")
         if (password !== confirmPassword) {
-            setPasswordError("Passwords do not match")
+            setPasswordError(t('profile.password_error_mismatch'))
             return
         }
         updatePassword({variables: {oldPassword, password}, refetchQueries: [{query: GET_ME}]})
@@ -48,7 +50,7 @@ const Profile = () => {
                     setPasswordError(result.data.updatePassword.message)
                     return
                 }
-                setPasswordSuccess("Password updated successfully")
+                setPasswordSuccess(t('profile.password_updated'))
                 setPassword("")
                 setConfirmPassword("")
                 setOldPassword("")
@@ -62,7 +64,7 @@ const Profile = () => {
         setEmailError(null)
         setEmailSuccess("")
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            setEmailError("Please enter a valid email address")
+            setEmailError(t('profile.email_error_invalid'))
             return
         }
         updateEmail({variables: {email, password: passwordForEmail}, refetchQueries: [{query: GET_ME}]})
@@ -71,7 +73,7 @@ const Profile = () => {
                     setEmailError(result.data.updateEmail.message)
                     return
                 }
-                setEmailSuccess("Email updated successfully")
+                setEmailSuccess(t('profile.email_updated'))
                 setEmail("")
                 setPasswordForEmail("")
                 setTimeout(() => setIsEmailFormDisplay(false), 2000)
@@ -88,7 +90,7 @@ const Profile = () => {
         setConfigError(null)
         setConfigSuccess(null)
         if (!configValue.landingPage || !configValue.language) {
-            setConfigError("Both fields are required.")
+            setConfigError(t('profile.both_fields_required'))
             return
         }
         updateUserConfigurationMutation({ variables: { userConfiguration: configValue } })
@@ -97,7 +99,7 @@ const Profile = () => {
                     setConfigError(result.data.updateUserConfiguration.message)
                     return
                 }
-                setConfigSuccess("Configuration saved successfully")
+                setConfigSuccess(t('profile.config_saved'))
                 setTimeout(() => setConfigSuccess(null), 2000)
             })
             .catch((err) => setConfigError(err.message))
@@ -118,14 +120,14 @@ const Profile = () => {
 
                 {/* Details */}
                 <div className="mb-8">
-                    <p className="text-indigo-600 font-bold text-xs uppercase tracking-widest mb-3">Account details</p>
+                    <p className="text-indigo-600 font-bold text-xs uppercase tracking-widest mb-3">{t('profile.account_details')}</p>
                     <div className="flex flex-col gap-3">
                         <div className="flex items-center gap-4 bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4">
                             <svg className="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                             </svg>
                             <div className="flex flex-col min-w-0">
-                                <span className="text-xs text-gray-400">Full name</span>
+                                <span className="text-xs text-gray-400">{t('profile.full_name')}</span>
                                 <span className="text-sm font-bold text-gray-800 truncate">{user.name}</span>
                             </div>
                         </div>
@@ -134,16 +136,16 @@ const Profile = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                             </svg>
                             <div className="flex flex-col min-w-0">
-                                <span className="text-xs text-gray-400">Email address</span>
+                                <span className="text-xs text-gray-400">{t('profile.email_address')}</span>
                                 <span className="text-sm font-bold text-gray-800 truncate">{user.email}</span>
                             </div>
                         </div>
 
                         <div className="bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 flex flex-col gap-4">
-                            <p className="text-indigo-600 font-bold text-xs uppercase tracking-widest">Configuration</p>
+                            <p className="text-indigo-600 font-bold text-xs uppercase tracking-widest">{t('profile.configuration')}</p>
                             <form onSubmit={handleConfigSubmit} className="flex flex-col gap-3">
                                 <div className="flex flex-col gap-1">
-                                    <label className="text-xs font-semibold text-gray-500">Default house</label>
+                                    <label className="text-xs font-semibold text-gray-500">{t('profile.default_house')}</label>
                                     <select
                                         value={configValue.defaultHouse}
                                         onChange={(e) => handleConfigChange("defaultHouse", e.target.value)}
@@ -155,14 +157,14 @@ const Profile = () => {
                                     </select>
                                 </div>
                                 <div className="flex flex-col gap-1">
-                                    <label className="text-xs font-semibold text-gray-500">Default landing page</label>
+                                    <label className="text-xs font-semibold text-gray-500">{t('profile.default_landing_page')}</label>
                                     <select
                                         value={configValue.landingPage}
                                         onChange={(e) => handleConfigChange("landingPage", e.target.value)}
                                         className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     >
-                                        <option value="/home">Home</option>
-                                        <option value="/profile">Profile</option>
+                                        <option value="/home">{t('profile.home')}</option>
+                                        <option value="/profile">{t('menu.profile')}</option>
                                         {(() => {
                                             const selectedHouse = user.roleHouseUsers.find(rhu => String(rhu.house.id) === String(configValue.defaultHouse))
                                                 ?? user.roleHouseUsers[0]
@@ -171,9 +173,9 @@ const Profile = () => {
                                             const { name: roleName } = selectedHouse.role
                                             return (
                                                 <>
-                                                    <option value={`/profile_house/${name}/${id}`}>Check House</option>
+                                                    <option value={`/profile_house/${name}/${id}`}>{t('profile.check_house')}</option>
                                                     {roleName === "admin" && (
-                                                        <option value={`/manage_house/${name}/${id}`}>Manage House</option>
+                                                        <option value={`/manage_house/${name}/${id}`}>{t('profile.manage_house')}</option>
                                                     )}
                                                 </>
                                             )
@@ -181,14 +183,14 @@ const Profile = () => {
                                     </select>
                                 </div>
                                 <div className="flex flex-col gap-1">
-                                    <label className="text-xs font-semibold text-gray-500">Language</label>
+                                    <label className="text-xs font-semibold text-gray-500">{t('profile.language')}</label>
                                     <select
                                         value={configValue.language}
                                         onChange={(e) => handleConfigChange("language", e.target.value)}
                                         className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     >
-                                        <option value="en">English</option>
-                                        <option value="fr">Français</option>
+                                        <option value="en">{t('language_switcher.en')}</option>
+                                        <option value="fr">{t('language_switcher.fr')}</option>
                                     </select>
                                 </div>
                                 {configError && (
@@ -201,7 +203,7 @@ const Profile = () => {
                                     type="submit"
                                     className="self-end bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors"
                                 >
-                                    Save
+                                    {t('profile.save')}
                                 </button>
                             </form>
                         </div>
@@ -214,7 +216,7 @@ const Profile = () => {
                                 onClick={() => setIsPasswordFormDisplay(v => !v)}
                                 className="w-full flex items-center justify-between px-5 py-4 bg-gray-50 hover:bg-gray-100 transition-colors text-left"
                             >
-                                <span className="text-sm font-semibold text-gray-700">Update Password</span>
+                                <span className="text-sm font-semibold text-gray-700">{t('profile.update_password')}</span>
                                 <svg className={`w-4 h-4 text-gray-400 transition-transform ${isPasswordFormDisplay ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"/>
                                 </svg>
@@ -223,21 +225,21 @@ const Profile = () => {
                                 <form onSubmit={(e) => handleUpdatePassword(e)} className="flex flex-col gap-3 px-5 py-4 border-t border-gray-100">
                                     <input
                                         type="password"
-                                        placeholder="Current password"
+                                        placeholder={t('profile.current_password')}
                                         value={oldPassword}
                                         onChange={(e) => setOldPassword(e.target.value)}
                                         className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
                                     <input
                                         type="password"
-                                        placeholder="New password"
+                                        placeholder={t('profile.new_password')}
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
                                     <input
                                         type="password"
-                                        placeholder="Confirm new password"
+                                        placeholder={t('profile.confirm_new_password')}
                                         value={confirmPassword}
                                         onChange={(e) => setConfirmPassword(e.target.value)}
                                         className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -252,7 +254,7 @@ const Profile = () => {
                                         type="submit"
                                         className="self-end bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-5 py-2 rounded-xl transition-colors"
                                     >
-                                        Save
+                                        {t('profile.save')}
                                     </button>
                                 </form>
                             )}
@@ -264,7 +266,7 @@ const Profile = () => {
                                 onClick={() => setIsEmailFormDisplay(v => !v)}
                                 className="w-full flex items-center justify-between px-5 py-4 bg-gray-50 hover:bg-gray-100 transition-colors text-left"
                             >
-                                <span className="text-sm font-semibold text-gray-700">Update Email</span>
+                                <span className="text-sm font-semibold text-gray-700">{t('profile.update_email')}</span>
                                 <svg className={`w-4 h-4 text-gray-400 transition-transform ${isEmailFormDisplay ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"/>
                                 </svg>
@@ -273,14 +275,14 @@ const Profile = () => {
                                 <form onSubmit={(e) => {e.preventDefault(); handleUpdateEmail(e)}} className="flex flex-col gap-3 px-5 py-4 border-t border-gray-100">
                                     <input
                                         type="email"
-                                        placeholder="New email address"
+                                        placeholder={t('profile.new_email_address')}
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
                                     <input
                                         type="password"
-                                        placeholder="Current password"
+                                        placeholder={t('profile.current_password')}
                                         value={passwordForEmail}
                                         onChange={(e) => setPasswordForEmail(e.target.value)}
                                         className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -295,7 +297,7 @@ const Profile = () => {
                                         type="submit"
                                         className="self-end bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-5 py-2 rounded-xl transition-colors"
                                     >
-                                        Save
+                                        {t('profile.save')}
                                     </button>
                                 </form>
                             )}
@@ -305,9 +307,9 @@ const Profile = () => {
 
                 {/* Houses */}
                 <div>
-                    <p className="text-indigo-600 font-bold text-xs uppercase tracking-widest mb-3">Houses</p>
+                    <p className="text-indigo-600 font-bold text-xs uppercase tracking-widest mb-3">{t('profile.houses')}</p>
                     {user.roleHouseUsers?.length === 0 ? (
-                        <p className="text-sm text-gray-400 italic">You are not part of any house yet.</p>
+                        <p className="text-sm text-gray-400 italic">{t('profile.no_houses')}</p>
                     ) : (
                         <ul className="flex flex-col gap-3">
                             {user.roleHouseUsers.map((rhu) => (

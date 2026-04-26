@@ -3,41 +3,41 @@ import {useQuery} from "@apollo/client/react";
 import {useParams, Link} from "react-router-dom";
 import {GET_HOUSE_BY_ID} from "../graphQl/query";
 import AddNewTaskButton from "./AddNewTaskButton";
+import {useTranslation} from "react-i18next";
 
 const AllTasks = () => {
     const houseId = useParams().houseId;
+    const {t} = useTranslation()
     const {loading, error, data} = useQuery(GET_HOUSE_BY_ID, {variables: {id: parseInt(houseId)}})
 
     if (loading) return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-6">
             <div className="flex flex-col items-center gap-4">
                 <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
-                <p className="text-indigo-800 font-medium animate-pulse">Loading tasks...</p>
+                <p className="text-indigo-800 font-medium animate-pulse">{t('task.loading_tasks')}</p>
             </div>
         </div>
     );
     if (error) return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-6">
             <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md border-l-4 border-red-500">
-                <h3 className="text-lg font-bold text-red-600 mb-2">Error</h3>
+                <h3 className="text-lg font-bold text-red-600 mb-2">{t('task.error_title')}</h3>
                 <p className="text-gray-600">{error.message}</p>
             </div>
         </div>
     );
-    if (!data) return <div>No data found.</div>;
+    if (!data) return <div>{t('task.no_data')}</div>;
 
     const house = data.getHouseById
     const tasks = house.tasks
-
-    console.log(house)
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-start justify-center p-6">
             <div className="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-lg border border-white/50">
                 <div className="mb-8">
-                    <p className="text-indigo-600 font-bold text-xs uppercase tracking-widest mb-1">House</p>
+                    <p className="text-indigo-600 font-bold text-xs uppercase tracking-widest mb-1">{t('admin_nav.house')}</p>
                     <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">{house.name}</h1>
-                    <p className="mt-1 text-sm text-gray-400">{tasks.length} task{tasks.length !== 1 ? 's' : ''}</p>
+                    <p className="mt-1 text-sm text-gray-400">{t('task.all_tasks_count', {count: tasks.length})}</p>
                 </div>
 
                 <ul className="flex flex-col gap-3">

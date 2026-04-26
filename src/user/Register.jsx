@@ -2,9 +2,11 @@ import React, {useState} from 'react';
 import {useMutation} from "@apollo/client/react";
 import {REGISTER_MUTATION} from "../graphQl/mutation";
 import {useNavigate} from "react-router-dom";
+import {useTranslation} from "react-i18next";
 
 const Register = () => {
     const [register, {loading}] = useMutation(REGISTER_MUTATION)
+    const {t} = useTranslation()
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [email, setEmail] = useState("")
@@ -17,12 +19,12 @@ const Register = () => {
         const newErrors = {};
 
         if (password !== passwordConfirmation) {
-            newErrors.password = "Passwords do not match";
+            newErrors.password = t('register.errors.password_mismatch');
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-            newErrors.email = "Please enter a valid email address";
+            newErrors.email = t('register.errors.invalid_email');
         }
 
         if (Object.keys(newErrors).length > 0) {
@@ -39,7 +41,7 @@ const Register = () => {
                     console.log("Registration successful");
                     navigate("/login", {
                         state: {
-                            message: "Registration successful! Please check your email for verification."
+                            message: t('register.errors.registration_success')
                         }
                     })
                 }
@@ -54,53 +56,53 @@ const Register = () => {
         <div className="bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
             <div className="bg-white rounded-3xl shadow-2xl p-10 w-full max-w-md border border-white/50">
                 <div className="mb-10 text-center">
-                    <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight mb-2">Create Account</h1>
-                    <p className="text-gray-500 text-lg">Fill in your details to get started</p>
+                    <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight mb-2">{t('register.title')}</h1>
+                    <p className="text-gray-500 text-lg">{t('register.subtitle')}</p>
                 </div>
                 <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
                     {errors.global && <p className="text-red-500">{errors.global}</p>}
                     <div className="flex flex-col gap-2">
-                        <label className="text-sm font-semibold text-gray-700 ml-1">Username</label>
+                        <label className="text-sm font-semibold text-gray-700 ml-1">{t('register.username')}</label>
                         <input
                             type="text"
                             name="username"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            placeholder="Enter your username"
+                            placeholder={t('register.username_placeholder')}
                             className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm placeholder-gray-400"
                         />
                     </div>
                     <div className="flex flex-col gap-2">
-                        <label className="text-sm font-semibold text-gray-700 ml-1">Email</label>
+                        <label className="text-sm font-semibold text-gray-700 ml-1">{t('register.email')}</label>
                         <input
                             type="text"
                             name="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Enter your Email"
+                            placeholder={t('register.email_placeholder')}
                             className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm placeholder-gray-400"
                         />
                         {errors.email && <p className="text-red-500 text-xs ml-1">{errors.email}</p>}
                     </div>
                     <div className="flex flex-col gap-2">
-                        <label className="text-sm font-semibold text-gray-700 ml-1">Password</label>
+                        <label className="text-sm font-semibold text-gray-700 ml-1">{t('register.password')}</label>
                         <input
                             type="password"
                             name="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Enter your password"
+                            placeholder={t('register.password_placeholder')}
                             className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm placeholder-gray-400"
                         />
                     </div>
                     <div className="flex flex-col gap-2">
-                        <label className="text-sm font-semibold text-gray-700 ml-1">Confirm Password</label>
+                        <label className="text-sm font-semibold text-gray-700 ml-1">{t('register.confirm_password')}</label>
                         <input
                             type="password"
                             name="passwordConfirmation"
                             value={passwordConfirmation}
                             onChange={(e) => setPasswordConfirmation(e.target.value)}
-                            placeholder="Re-enter your password"
+                            placeholder={t('register.confirm_password_placeholder')}
                             className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm placeholder-gray-400"
                         />
                         {errors.password && <p className="text-red-500 text-xs ml-1">{errors.password}</p>}
@@ -110,11 +112,11 @@ const Register = () => {
                         disabled={loading}
                         className={`mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-[0.98] text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-blue-500/30 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
                     >
-                        {loading ? 'Creating Account...' : 'Create Account'}
+                        {loading ? t('register.creating_account') : t('register.create_account')}
                     </button>
                     <div className="mt-4 text-center">
-                        <span className="text-sm text-gray-500">Already have an account? </span>
-                        <a href="/login" className="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline transition-colors">Sign in</a>
+                        <span className="text-sm text-gray-500">{t('register.already_have_account')}</span>
+                        <a href="/login" className="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline transition-colors">{t('register.sign_in')}</a>
                     </div>
                 </form>
             </div>
