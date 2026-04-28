@@ -21,9 +21,12 @@
     "feature_tasks_desc": "Assignez, suivez et accomplissez les tâches ménagères pour que rien ne passe entre les mailles du filet.",
     "feature_members_title": "Inviter des Membres",
     "feature_members_desc": "Partagez un code d'invitation avec les membres de votre foyer pour les intégrer instantanément.",
-    "get_started": "Commencer"
+    "get_started": "Commencer",
+    "footer_copyright": "© {{year}} HomeSync. Tous droits réservés.",
+    "footer_made_by": "Créé par Charles Fournet"
   },
   "login": {
+
     "title": "Bon Retour",
     "subtitle": "Veuillez saisir vos informations pour vous connecter",
     "email": "Email",

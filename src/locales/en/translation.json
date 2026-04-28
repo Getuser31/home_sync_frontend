@@ -21,9 +21,12 @@
     "feature_tasks_desc": "Assign, track and complete household tasks so nothing falls through the cracks.",
     "feature_members_title": "Invite Members",
     "feature_members_desc": "Share an invite code with your household members to get everyone on board instantly.",
-    "get_started": "Get started"
+    "get_started": "Get started",
+    "footer_copyright": "© {{year}} HomeSync. All rights reserved.",
+    "footer_made_by": "Made by Charles Fournet"
   },
   "login": {
+
     "title": "Welcome Back",
     "subtitle": "Please enter your details to sign in",
     "email": "Email",
