@@ -1,6 +1,6 @@
 import React from "react";
-import {render, screen} from "./utils/test-utils";
-import PrivateRoute from "./PrivateRoute";
+import {render, screen} from "../utils/test-utils";
+import PrivateRoute from "../PrivateRoute";
 
 describe("PrivateRoute", () => {
     it("renders nothing when user is authenticated and not loading", () => {

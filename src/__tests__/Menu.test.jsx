@@ -1,6 +1,6 @@
 import React from "react";
-import {render, screen} from "./utils/test-utils";
-import Menu from "./Menu";
+import {render, screen} from "../utils/test-utils";
+import Menu from "../Menu";
 
 describe("Menu", () => {
     it("renders HouseSync brand", () => {

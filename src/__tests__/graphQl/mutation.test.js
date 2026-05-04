@@ -17,7 +17,7 @@ import {
     UPDATE_USER_ROLE,
     CREATE_DUMMY_USER_FOR_HOUSE,
     REMOVE_USER_FROM_HOUSE,
-} from "./mutation";
+} from "../../graphQl/mutation";
 
 describe("GraphQL mutation definitions", () => {
     const mutations = [

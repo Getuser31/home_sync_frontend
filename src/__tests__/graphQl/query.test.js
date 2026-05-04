@@ -6,7 +6,7 @@ import {
     GET_TASK_RECURRENCES,
     GET_ME,
     GET_ROLES,
-} from "./query";
+} from "../../graphQl/query";
 
 describe("GraphQL query definitions", () => {
     it("GET_HOUSE_BY_CODE is a valid query", () => {

@@ -1,6 +1,6 @@
 import React from "react";
-import {render, screen} from "../utils/test-utils";
-import AddHouse from "./AddHouse";
+import {render, screen} from "../../utils/test-utils";
+import AddHouse from "../../house/AddHouse";
 
 describe("AddHouse", () => {
     it("renders the create house form heading", () => {

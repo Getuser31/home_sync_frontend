@@ -6,7 +6,10 @@ import generatePeriodKey from "../utils/periodKeyService";
 import AdminNavigationBar from "./AdminNavigationBar";
 import {useTranslation} from "react-i18next";
 
-export const today = () => new Date().toISOString().split('T')[0]
+export const today = () => {
+    const d = new Date()
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
 
 export const startOfCurrentWeek = () => {
     const d = new Date()
@@ -36,10 +39,15 @@ export const formatDuration = (minutes) => {
     return m === 0 ? `${h}h` : `${h}h ${m}min`
 }
 
+const parseLocalDate = (s) => {
+    const [y, m, d] = s.split('-').map(Number)
+    return new Date(y, m - 1, d)
+}
+
 export const taskStats = (task, startDate, endDate) => {
-    const weekStart = startOfCurrentWeek()
-    const rangeStart = new Date(startDate) > weekStart ? new Date(startDate) : weekStart
-    const rangeEnd = new Date(endDate)
+    const rangeStart = parseLocalDate(startDate)
+    const rangeEnd = parseLocalDate(endDate)
+    rangeEnd.setHours(23, 59, 59, 999)
 
     return task.taskLives.map(taskLife => {
         const expected = countPeriodsBetween(rangeStart, rangeEnd, taskLife.recurrence.name, taskLife.recurrence.frequencyDays)
@@ -66,7 +74,11 @@ const HouseStatistics = () => {
     const {loading, error, data: houseData} = useQuery(GET_HOUSE_BY_ID, {variables: {id: parseInt(houseId)}})
     const [selectedUserId, setSelectedUserId] = useState('all')
     const [endDate, setEndDate] = useState(today())
-    const [startDate, setStartDate] = useState('')
+    const [startDate, setStartDate] = useState(() => {
+        const d = startOfCurrentWeek()
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+    })
+    const [earliestTaskDate, setEarliestTaskDate] = useState('')
 
     useEffect(() => {
         if (houseData?.getHouseById?.tasks?.length > 0) {
@@ -74,7 +86,7 @@ const HouseStatistics = () => {
                 .map(t => t.dateCreated)
                 .reduce((min, d) => d < min ? d : min)
                 .split('T')[0]
-            setStartDate(earliest)
+            setEarliestTaskDate(earliest)
         }
     }, [houseData])
 
@@ -83,7 +95,6 @@ const HouseStatistics = () => {
 
     const house = houseData?.getHouseById
     const users = house?.users
-    const earliestDate = startDate
 
     const tasks = house?.tasks
         .filter(task => new Date(task.dateCreated) <= new Date(endDate))
@@ -118,7 +129,7 @@ const HouseStatistics = () => {
                                 <input
                                     type="date"
                                     value={startDate}
-                                    min={earliestDate}
+                                    min={earliestTaskDate}
                                     max={endDate}
                                     onChange={e => setStartDate(e.target.value)}
                                     className={inputClass}

@@ -1,6 +1,6 @@
 import React from "react";
-import {render, screen} from "./utils/test-utils";
-import LandingPage from "./LandingPage";
+import {render, screen} from "../utils/test-utils";
+import LandingPage from "../LandingPage";
 
 describe("LandingPage", () => {
     it("renders the HomeSync brand name", () => {
