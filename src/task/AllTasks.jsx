@@ -29,7 +29,9 @@ const AllTasks = () => {
     if (!data) return <div>{t('task.no_data')}</div>;
 
     const house = data.getHouseById
-    const tasks = house.tasks
+    if (!house || house.__typename !== 'House') return <div>{t('task.no_data')}</div>;
+
+    const tasks = house.tasks ?? []
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-start justify-center p-6">

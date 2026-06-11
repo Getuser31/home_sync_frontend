@@ -22,14 +22,16 @@ const ConsultHouse = () => {
 
     const house = data?.getHouseById;
 
-    const tasksForCurrentUser = house.tasks.filter(task =>
+    if (!house || house.__typename !== 'House') return <div>House not found.</div>;
+
+    const tasksForCurrentUser = (house.tasks ?? []).filter(task =>
         task.taskLives.some(taskLife =>
             taskLife.assignedUsers.some(assignedUser => assignedUser.id === user?.id)
         )
     )
 
 
-    const tasksForDummyUsers = house.tasks.filter(task =>
+    const tasksForDummyUsers = (house.tasks ?? []).filter(task =>
         task.taskLives.some(taskLife =>
             taskLife.assignedUsers.some(assignedUser => assignedUser.isActive === false)
         )
