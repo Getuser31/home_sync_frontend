@@ -1,6 +1,6 @@
 import React from "react";
-import {render, screen} from "../utils/test-utils";
-import Login from "./Login";
+import {render, screen} from "../../utils/test-utils";
+import Login from "../../user/Login";
 
 describe("Login", () => {
     it("renders the login form heading", () => {

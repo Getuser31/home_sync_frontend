@@ -1,6 +1,6 @@
 import React from "react";
-import {render, screen} from "../utils/test-utils";
-import JoinHouse from "./JoinHouse";
+import {render, screen} from "../../utils/test-utils";
+import JoinHouse from "../../house/JoinHouse";
 
 describe("JoinHouse", () => {
     it("renders the join house form heading", () => {

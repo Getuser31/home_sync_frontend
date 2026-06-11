@@ -1,12 +1,11 @@
-import {countPeriodsBetween, formatDuration, taskStats} from "./HouseStatistics";
-import generatePeriodKey from "../utils/periodKeyService";
+import {countPeriodsBetween, formatDuration, taskStats} from "../../house/HouseStatistics";
 
 // HouseStatistics.jsx has helper functions that are not exported.
 // We test via generatePeriodKey directly (which is already tested),
 // and we test the component rendering here.
 import React from "react";
-import {render, screen} from "../utils/test-utils";
-import HouseStatistics from "./HouseStatistics";
+import {render, screen} from "../../utils/test-utils";
+import HouseStatistics from "../../house/HouseStatistics";
 
 // Mock useQuery to simulate loaded data for HouseStatistics
 import {useQuery} from "@apollo/client/react";
@@ -142,23 +141,69 @@ describe("countPeriodsBetween", () => {
     });
 
     it("counts 3 periods for 3 days daily", () => {
-        const start = "2026-04-25";
-        const end = "2026-04-27";
-        // Generate keys for April 25, 26, 27
-        const keys = new Set();
-        keys.add(generatePeriodKey("Daily", new Date("2026-04-25")));
-        keys.add(generatePeriodKey("Daily", new Date("2026-04-26")));
-        keys.add(generatePeriodKey("Daily", new Date("2026-04-27")));
-        expect(keys.size).toBe(3);
+        expect(countPeriodsBetween("2026-04-25", "2026-04-27", "Daily", 1)).toBe(3);
     });
 
     it("counts 2 periods for weekly across 8 days", () => {
-        const start = "2026-04-20";  // Monday W17
-        const end = "2026-04-27";    // Monday W18
-        // Monday April 20 -> W17, April 27 -> W18
-        const keys = new Set();
-        keys.add(generatePeriodKey("Weekly", new Date("2026-04-20")));
-        keys.add(generatePeriodKey("Weekly", new Date("2026-04-27")));
-        expect(keys.size).toBe(2);
+        // April 20 (W17) → April 27 (W18)
+        expect(countPeriodsBetween("2026-04-20", "2026-04-27", "Weekly", 7)).toBe(2);
+    });
+});
+
+describe("taskStats", () => {
+    const makeTask = (completions) => ({
+        timeToComplete: 30,
+        taskLives: [
+            {
+                recurrence: {name: "Daily", frequencyDays: 1},
+                completions,
+            },
+        ],
+    });
+
+    it("counts completions within the date range", () => {
+        const task = makeTask([
+            {completedAt: "2026-04-25T10:00:00.000Z"},
+            {completedAt: "2026-04-26T10:00:00.000Z"},
+        ]);
+        const [stat] = taskStats(task, "2026-04-25", "2026-04-26");
+        expect(stat.total).toBe(2);
+    });
+
+    it("excludes completions outside the date range", () => {
+        const task = makeTask([
+            {completedAt: "2026-04-24T10:00:00.000Z"},
+            {completedAt: "2026-04-27T10:00:00.000Z"},
+        ]);
+        const [stat] = taskStats(task, "2026-04-25", "2026-04-26");
+        expect(stat.total).toBe(0);
+    });
+
+    it("counts a completion made during the day on the end date", () => {
+        const task = makeTask([
+            // 15:00 UTC is within April 26 for all real-world timezones
+            {completedAt: "2026-04-26T15:00:00.000Z"},
+        ]);
+        const [stat] = taskStats(task, "2026-04-26", "2026-04-26");
+        expect(stat.total).toBe(1);
+    });
+
+    it("calculates percentage correctly", () => {
+        const task = makeTask([
+            {completedAt: "2026-04-25T10:00:00.000Z"},
+        ]);
+        const [stat] = taskStats(task, "2026-04-25", "2026-04-25");
+        expect(stat.total).toBe(1);
+        expect(stat.expected).toBeGreaterThanOrEqual(1);
+        expect(stat.percentage).toBe(100);
+    });
+
+    it("calculates timeSpent based on completions", () => {
+        const task = makeTask([
+            {completedAt: "2026-04-25T10:00:00.000Z"},
+            {completedAt: "2026-04-26T10:00:00.000Z"},
+        ]);
+        const [stat] = taskStats(task, "2026-04-25", "2026-04-26");
+        expect(stat.timeSpent).toBe(60); // 2 completions × 30 min
     });
 });

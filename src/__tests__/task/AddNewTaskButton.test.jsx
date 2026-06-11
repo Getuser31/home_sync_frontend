@@ -1,6 +1,6 @@
 import React from "react";
-import {render, screen} from "../utils/test-utils";
-import AddNewTaskButton from "./AddNewTaskButton";
+import {render, screen} from "../../utils/test-utils";
+import AddNewTaskButton from "../../task/AddNewTaskButton";
 
 describe("AddNewTaskButton", () => {
     it("renders the button text", () => {

@@ -1,6 +1,6 @@
 import React from "react";
-import {render, screen} from "../utils/test-utils";
-import Register from "./Register";
+import {render, screen} from "../../utils/test-utils";
+import Register from "../../user/Register";
 
 describe("Register", () => {
     it("renders the registration form heading", () => {

@@ -1,4 +1,4 @@
-import generatePeriodKey from "./periodKeyService";
+import generatePeriodKey from "../../utils/periodKeyService";
 
 describe("generatePeriodKey", () => {
     describe("Daily recurrence", () => {

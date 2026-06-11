@@ -1,9 +1,9 @@
 import React from 'react';
 import {render, screen} from '@testing-library/react';
 import {MemoryRouter} from 'react-router-dom';
-import {AuthContext} from './AuthContext';
-import App from './App';
-import './i18n';
+import {AuthContext} from '../AuthContext';
+import App from '../App';
+import '../i18n';
 
 const authValue = {
     user: null,
