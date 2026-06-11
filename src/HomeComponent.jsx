@@ -2,19 +2,33 @@ import React, {useState} from 'react';
 import {Link, useNavigate} from "react-router-dom";
 import {useMutation, useQuery} from "@apollo/client/react"
 import {GET_HOUSE_FOR_CURRENT_USER} from "./graphQl/query";
-import {REMOVE_HOUSE} from "./graphQl/mutation";
+import {REMOVE_HOUSE, UPDATE_USER_CONFIGURATION} from "./graphQl/mutation";
 import {useTranslation} from "react-i18next";
+import {useAuth} from "./AuthContext";
 
 
 const HomeComponent = () => {
     const navigate = useNavigate();
     const {t} = useTranslation();
+    const {user, refreshUser} = useAuth()
     const [houseToDelete, setHouseToDelete] = useState(null)
 
     const [removeHouse] = useMutation(REMOVE_HOUSE)
+    const [updateUserConfiguration] = useMutation(UPDATE_USER_CONFIGURATION)
 
     const handleRemoveHouse = () => {
+        const config = user?.userConfiguration
+        const isDefaultHouse = config && String(config.defaultHouse) === String(houseToDelete)
+        const landingUsesHouse = config?.landingPage && config.landingPage.includes(`/${houseToDelete}`)
+
         removeHouse({variables: {houseId: houseToDelete}, refetchQueries: [{ query: GET_HOUSE_FOR_CURRENT_USER }]})
+            .then(() => {
+                if (isDefaultHouse || landingUsesHouse) {
+                    const newConfig = {...config, defaultHouse: null, landingPage: "/home"}
+                    updateUserConfiguration({variables: {userConfiguration: newConfig}})
+                        .then(() => refreshUser())
+                }
+            })
         setHouseToDelete(null)
     }
 

@@ -52,13 +52,25 @@ export const AuthProvider = ({children}) => {
         }
     }
 
+    const refreshUser = () => {
+        const token = localStorage.getItem("userTokenHomeSync")
+        if (!token) return
+        client.query({query: GET_ME, fetchPolicy: "network-only"})
+            .then((result) => {
+                if (result?.data?.getMe) {
+                    setUser({token, ...result.data.getMe})
+                }
+            })
+            .catch((error) => console.log(error))
+    }
+
     const logout = () => {
         localStorage.removeItem("userTokenHomeSync")
         setUser(null)
         client.resetStore()
     }
 
-    return <AuthContext.Provider value={{user, login, logout, loading}}>
+    return <AuthContext.Provider value={{user, login, logout, loading, refreshUser}}>
         {children}
     </AuthContext.Provider>
 }
