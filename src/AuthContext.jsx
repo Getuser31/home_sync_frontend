@@ -35,7 +35,7 @@ export const AuthProvider = ({children}) => {
                 setLoading(false)
             })
 
-    }, []);
+    }, [client]);
 
     const login = (loginPayload) => {
         if (loginPayload?.token) {

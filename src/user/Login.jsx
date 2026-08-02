@@ -88,10 +88,6 @@ const Login = () => {
                     >
                         <Link to={"/register"}>{t('login.create_account')}</Link>
                     </button>
-                    <div className="mt-4 text-center">
-                        <a href="#"
-                           className="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline transition-colors">{t('login.forgot_password')}</a>
-                    </div>
                 </form>
             </div>
         </div>
