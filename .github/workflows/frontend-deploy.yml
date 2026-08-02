@@ -2,6 +2,8 @@ name: Deploy Frontend
 on:
   push:
     branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   test:
@@ -22,7 +24,14 @@ jobs:
       - name: Run tests
         run: npm test -- --watchAll=false
 
+      - name: Build production assets
+        run: npm run build
+
+      - name: Verify favicon fallback
+        run: test -f build/favicon.ico
+
   deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: test
     runs-on: ubuntu-latest
     steps:
